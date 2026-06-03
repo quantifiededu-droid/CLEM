@@ -4,14 +4,60 @@ import {
   Smartphone, Monitor, ShieldCheck, BarChart3, Database, Users, 
   Check, HelpCircle, ArrowRight, ChevronRight, ChevronDown, 
   MapPin, Mail, Phone, RefreshCw, Sliders, Coffee, ShoppingBag, 
-  Sparkles, DollarSign, Download, MessageCircle
+  Sparkles, DollarSign, Download, MessageCircle, Building2
 } from 'lucide-react';
 
 interface LandingPageProps {
   onNavigate: (route: 'landing' | 'pos' | 'backoffice') => void;
 }
 
+const SHOP_SLIDES = [
+  {
+    type: 'Local Retail & Supermarkets',
+    tagline: 'Lightning-fast checkout registers, bulk inventory uploads, and persistent offline database buffers.',
+    image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1600&q=80',
+    icon: ShoppingBag,
+    badge: '100% Stock Accuracy',
+    colorClass: 'from-blue-600/20 to-blue-900/30 border-blue-500/20 text-blue-400'
+  },
+  {
+    type: 'Fine Dining & Cocktail Bars',
+    tagline: 'Interactive dynamic visual floor plans, automated kitchen display orders, and live recipe cost deplete.',
+    image: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=1600&q=80',
+    icon: Coffee,
+    badge: '85% Waste Reduction',
+    colorClass: 'from-amber-600/20 to-amber-900/30 border-amber-500/20 text-amber-400'
+  },
+  {
+    type: 'High-End Boutiques & Apparel',
+    tagline: 'Aesthetic variant categorization grid, multi-unit stock tracking, and integrated customer loyalty cards.',
+    image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1600&q=80',
+    icon: Sparkles,
+    badge: 'Zero Register Variance',
+    colorClass: 'from-purple-600/20 to-purple-900/30 border-purple-500/20 text-purple-400'
+  },
+  {
+    type: 'Urban Bakeries & Coffee Shops',
+    tagline: 'Hot drink modifier selectors, table reservations, pastry inventory counts, and instant split checkouts.',
+    image: 'https://images.unsplash.com/photo-1453614512568-c4024d13c247?auto=format&fit=crop&w=1600&q=80',
+    icon: Sliders,
+    badge: '3-Sec Drawer Checks',
+    colorClass: 'from-emerald-600/20 to-emerald-950/30 border-emerald-500/20 text-emerald-400'
+  }
+];
+
 export default function LandingPage({ onNavigate }: LandingPageProps) {
+  // Slideshow active index
+  const [activeSlide, setActiveSlide] = useState(0);
+
+  // Auto cycling timer
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % SHOP_SLIDES.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, []);
+
   // Mobile menu state
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   // Download success animation flag
@@ -72,8 +118,8 @@ CLEMTRIX COMMERCE SOFTWARE LIMITED • ACCRA, GHANA
 
   const faqs = [
     {
-      q: "Does Clemtrix POS integrate with the Ghana Revenue Authority (GRA)?",
-      a: "Yes! Clemtrix POS is built from the ground up to support the latest GRA E-Invoicing and Fiscalization regulations. It accurately computes VAT (15%), GETFund (2.5%), NHIL (2.5%), and Covid-19 Health Recovery Levy (1%), generating compliance-ready transaction structures that align with GRA API specs."
+      q: "How does the recipe and ingredients tracking system benefit my kitchen?",
+      a: "Clemtrix matches real-time inventory levels to every menu item bought. When a guest orders a cocktail or burger, the system automatically subtracts precise quantities of raw ingredients, helping you control cost-of-goods-sold and spot kitchen leaks instantly."
     },
     {
       q: "Can I use Clemtrix POS offline if our internet connection drops?",
@@ -91,74 +137,106 @@ CLEMTRIX COMMERCE SOFTWARE LIMITED • ACCRA, GHANA
 
   return (
     <div className="min-h-screen bg-dark-bg text-slate-100 font-sans selection:bg-brand selection:text-dark-bg">
-      {/* Absolute top notice bar */}
-      <div className="bg-brand text-dark-bg text-center py-2 px-4 text-xs lg:text-sm font-bold tracking-wide flex items-center justify-center gap-2">
-        <Sparkles className="w-4 h-4 animate-pulse text-dark-bg" />
-        <span>Clemtrix POS v4.2 - Fully GRA Compliant & Dual-Currency Ready for Ghana!</span>
+      {/* Absolute top notice bar - ultra premium styling */}
+      <div className="bg-gradient-to-r from-blue-700 via-blue-600 to-slate-950 text-white text-center py-2 px-4 text-xs font-semibold tracking-wide flex items-center justify-center gap-2 border-b border-brand/20 relative overflow-hidden">
+        <div className="absolute inset-x-0 h-px bg-white/10 top-0" />
+        <Sparkles className="w-4 h-4 animate-bounce text-brand" />
+        <span>Clemtrix POS v4.2 &mdash; <strong className="text-brand font-black">Offline Hybrid Engine</strong> & Dual-Currency Optimized for Ghana!</span>
         <button 
           onClick={() => onNavigate('pos')} 
-          className="underline hover:no-underline ml-2 flex items-center gap-1 font-extrabold"
+          className="ml-3 px-3 py-1 bg-brand text-slate-950 rounded-full text-[10px] font-black uppercase hover:bg-white hover:text-blue-950 transition-all shadow-md flex items-center gap-1 active:scale-95"
         >
-          Instant Demo <ArrowRight className="w-3.5 h-3.5" />
+          Instant Demo <ArrowRight className="w-3 h-3" />
         </button>
       </div>
 
-      {/* Modern Header Navigation */}
-      <header className="sticky top-0 z-50 bg-dark-bg/85 backdrop-blur-md border-b border-white/10 px-6 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-to-tr from-brand to-brand-blue rounded-lg shadow-md shadow-brand/10"></div>
-            <div>
-              <span className="text-2xl font-bold tracking-tight text-white uppercase">
-                Clemtrix<span className="font-light opacity-50"> POS</span>
-              </span>
-              <span className="text-[9px] font-medium text-brand block -mt-1 tracking-[0.25em] uppercase font-mono">Next-Generation Commerce</span>
+      {/* Floating Glass Capsule Navigation bar */}
+      <div className="sticky top-4 z-50 px-4 md:px-6 w-full max-w-7xl mx-auto">
+        <header className="rounded-full bg-slate-950/80 backdrop-blur-xl border border-white/10 px-6 py-3 shadow-2xl shadow-blue-950/30">
+          <div className="flex items-center justify-between">
+            {/* Logo area */}
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20 border border-brand/50 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-tr from-brand-blue to-brand opacity-80" />
+                <span className="font-mono text-white font-black text-sm relative z-10">CX</span>
+              </div>
+              <div>
+                <span className="text-xl font-black tracking-tight text-white flex items-center gap-1.5">
+                  CLEMTRIX <span className="text-[10px] bg-brand/10 border border-brand/40 text-brand px-2 py-0.5 rounded-full font-mono uppercase tracking-widest">POS</span>
+                </span>
+                <span className="text-[8px] font-bold text-slate-400 block -mt-0.5 tracking-[0.25em] uppercase font-mono">
+                  Next-Gen <span className="text-brand">Hybrid</span> Commerce
+                </span>
+              </div>
             </div>
-          </div>
 
-          {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-white/60">
-            <a href="#solutions" className="hover:text-brand transition-colors text-white">Solutions</a>
-            <a href="#modules" className="hover:text-brand transition-colors">Modules</a>
-            <a href="#download" className="hover:text-brand transition-colors px-2.5 py-1 text-xs rounded-full bg-brand/10 border border-brand/20 text-brand flex items-center gap-1 font-bold">
-              <Download className="w-3.5 h-3.5" /> <span>Download App</span>
-            </a>
-            <a href="#roi" className="hover:text-brand transition-colors">ROI Calculator</a>
-            <a href="#pricing" className="hover:text-brand transition-colors">Pricing</a>
-            <a href="#faq" className="hover:text-brand transition-colors">FAQ</a>
-          </nav>
+            {/* Desktop Navigation Links - White styling with brand yellow hover effects */}
+            <nav className="hidden lg:flex items-center gap-6 text-xs font-bold tracking-wider uppercase text-slate-350">
+              <a href="#solutions" className="hover:text-white transition-colors relative py-1 group">
+                Solutions
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-brand transition-all group-hover:w-full" />
+              </a>
+              <a href="#showcase" className="hover:text-white transition-colors relative py-1 group">
+                Hardware
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-brand transition-all group-hover:w-full" />
+              </a>
+              <a href="#modules" className="hover:text-white transition-colors relative py-1 group">
+                Modules
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-brand transition-all group-hover:w-full" />
+              </a>
+              <a href="#testimonials" className="hover:text-white transition-colors relative py-1 group">
+                Testimonials
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-brand transition-all group-hover:w-full" />
+              </a>
+              <a href="#roi" className="hover:text-white transition-colors relative py-1 group">
+                Gain Calculator
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-brand transition-all group-hover:w-full" />
+              </a>
+              <a href="#pricing" className="hover:text-white transition-colors relative py-1 group">
+                Plans
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-brand transition-all group-hover:w-full" />
+              </a>
+              <a href="#faq" className="hover:text-white transition-colors relative py-1 group">
+                FAQ
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-brand transition-all group-hover:w-full" />
+              </a>
+              <a href="#download" className="hover:text-white transition-colors flex items-center gap-1.5 bg-blue-600/10 border border-blue-500/30 text-blue-400 px-3 py-1.5 rounded-full hover:bg-blue-600/20 transition-all font-mono normal-case tracking-normal">
+                <Download className="w-3.5 h-3.5" /> <span>Win64 App</span>
+              </a>
+            </nav>
 
-          {/* Action Buttons */}
-          <div className="hidden md:flex items-center gap-4">
+            {/* Premium Call to Action buttons */}
+            <div className="hidden md:flex items-center gap-3">
+              <button 
+                onClick={() => onNavigate('backoffice')}
+                className="text-white hover:text-brand font-extrabold text-xs tracking-wider uppercase px-4 py-2 hover:bg-white/5 rounded-full transition-all border border-transparent hover:border-slate-800"
+              >
+                Backoffice ERP
+              </button>
+              <button 
+                onClick={() => onNavigate('pos')} 
+                className="px-5 py-2.5 bg-brand hover:bg-white text-slate-950 hover:text-blue-900 rounded-full font-black text-xs tracking-wider uppercase transition-all duration-300 transform scale-100 hover:scale-105 active:scale-95 cursor-pointer shadow-lg shadow-brand/10 border border-brand/50"
+              >
+                Launch Live POS
+              </button>
+            </div>
+
+            {/* Hambuger for mobile */}
             <button 
-              onClick={() => onNavigate('backoffice')}
-              className="text-white/60 hover:text-white font-medium text-sm px-4 py-2 hover:bg-white/5 rounded-full transition-colors"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
+              className="lg:hidden text-slate-150 hover:text-brand focus:outline-none p-1.5 rounded-full bg-white/5 border border-white/5 cursor-pointer"
             >
-              Back-Office Login
-            </button>
-            <button 
-              onClick={() => onNavigate('pos')} 
-              className="px-6 py-2 border border-brand text-brand rounded-full hover:bg-brand hover:text-black font-semibold text-sm transition-colors cursor-pointer"
-            >
-              Launch POS Terminal
+              <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24">
+                {mobileMenuOpen ? (
+                  <path fillRule="evenodd" clipRule="evenodd" d="M18.278 16.864a1 1 0 01-1.414 1.414l-4.829-4.83-4.828 4.83a1 1 0 01-1.414-1.414l4.829-4.83-4.829-4.83a1 1 0 011.414-1.414l4.828 4.83 4.83-4.83a1 1 0 111.414 1.414l-4.83 4.83 4.83 4.83z" />
+                ) : (
+                  <path fillRule="evenodd" d="M4 5h16a1 1 0 010 2H4a1 1 0 110-2zm0 6h16a1 1 0 010 2H4a1 1 0 010-2zm0 6h16a1 1 0 010 2H4a1 1 0 010-2z" />
+                )}
+              </svg>
             </button>
           </div>
-
-          {/* Hambuger for mobile */}
-          <button 
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
-            className="md:hidden text-slate-100 hover:text-brand focus:outline-none"
-          >
-            <svg className="h-6 w-6 fill-current" viewBox="0 0 24 24">
-              {mobileMenuOpen ? (
-                <path fillRule="evenodd" clipRule="evenodd" d="M18.278 16.864a1 1 0 01-1.414 1.414l-4.829-4.83-4.828 4.83a1 1 0 01-1.414-1.414l4.829-4.83-4.829-4.83a1 1 0 011.414-1.414l4.828 4.83 4.83-4.83a1 1 0 111.414 1.414l-4.83 4.83 4.83 4.83z" />
-              ) : (
-                <path fillRule="evenodd" d="M4 5h16a1 1 0 010 2H4a1 1 0 110-2zm0 6h16a1 1 0 010 2H4a1 1 0 010-2zm0 6h16a1 1 0 010 2H4a1 1 0 010-2z" />
-              )}
-            </svg>
-          </button>
-        </div>
-      </header>
+        </header>
+      </div>
 
       {/* Mobile Menu Panel */}
       <AnimatePresence>
@@ -167,26 +245,28 @@ CLEMTRIX COMMERCE SOFTWARE LIMITED • ACCRA, GHANA
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-dark-bg border-b border-white/10 px-6 py-4 flex flex-col gap-4 text-sm font-medium"
+            className="lg:hidden bg-slate-950 border-b border-white/10 px-6 py-4 flex flex-col gap-4 text-sm font-medium"
           >
             <a href="#solutions" onClick={() => setMobileMenuOpen(false)} className="hover:text-brand py-1 transition-colors">Solutions</a>
+            <a href="#showcase" onClick={() => setMobileMenuOpen(false)} className="hover:text-brand py-1 transition-colors">Hardware Showcase</a>
             <a href="#modules" onClick={() => setMobileMenuOpen(false)} className="hover:text-brand py-1 transition-colors">Modules</a>
+            <a href="#testimonials" onClick={() => setMobileMenuOpen(false)} className="hover:text-brand py-1 transition-colors">Testimonials</a>
+            <a href="#roi" onClick={() => setMobileMenuOpen(false)} className="hover:text-brand py-1 transition-colors">Gain Calculator</a>
+            <a href="#pricing" onClick={() => setMobileMenuOpen(false)} className="hover:text-brand py-1 transition-colors">Pricing Plans</a>
+            <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="hover:text-brand py-1 transition-colors">FAQ</a>
             <a href="#download" onClick={() => setMobileMenuOpen(false)} className="hover:text-brand py-1 transition-colors flex items-center gap-2 text-brand font-bold">
               <Download className="w-4 h-4" /> Download Windows App (.EXE)
             </a>
-            <a href="#roi" onClick={() => setMobileMenuOpen(false)} className="hover:text-brand py-1 transition-colors">ROI Calculator</a>
-            <a href="#pricing" onClick={() => setMobileMenuOpen(false)} className="hover:text-brand py-1 transition-colors">Pricing</a>
-            <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="hover:text-brand py-1 transition-colors">FAQ</a>
             <div className="border-t border-white/10 pt-4 flex flex-col gap-3">
               <button 
                 onClick={() => { onNavigate('backoffice'); setMobileMenuOpen(false); }}
-                className="w-full text-center text-slate-300 hover:text-white py-2 border border-white/10 rounded-lg"
+                className="w-full text-center text-slate-300 hover:text-white py-2 border border-white/10 rounded-lg cursor-pointer"
               >
                 Back-Office ERP Dashboard
               </button>
               <button 
                 onClick={() => { onNavigate('pos'); setMobileMenuOpen(false); }}
-                className="w-full bg-brand text-dark-bg font-extrabold py-2.5 rounded-lg shadow-lg shadow-brand/10 flex items-center justify-center gap-2"
+                className="w-full bg-blue-600 hover:bg-brand text-white hover:text-slate-950 font-extrabold py-2.5 rounded-lg shadow-lg shadow-blue-650/15 flex items-center justify-center gap-2 transition-colors cursor-pointer"
               >
                 Launch Touchscreen POS
                 <ArrowRight className="w-4 h-4" />
@@ -197,12 +277,29 @@ CLEMTRIX COMMERCE SOFTWARE LIMITED • ACCRA, GHANA
       </AnimatePresence>
 
       {/* HERO SECTION */}
-      <section className="relative px-6 pt-16 pb-24 md:pt-28 md:pb-36 overflow-hidden">
-        {/* Glow Effects */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand/5 rounded-full blur-[140px] pointer-events-none" />
-        <div className="absolute top-10 right-10 w-96 h-96 bg-brand-blue/5 rounded-full blur-[120px] pointer-events-none" />
+      <section className="relative px-6 pt-10 pb-16 md:pt-16 md:pb-24 overflow-hidden min-h-[82vh] flex items-center">
+        {/* Fullscreen Slideshow background layers */}
+        <div className="absolute inset-0 z-0 overflow-hidden select-none pointer-events-none">
+          <AnimatePresence mode="popLayout">
+            <motion.div
+              key={activeSlide}
+              initial={{ opacity: 0, scale: 1.05 }}
+              animate={{ opacity: 0.22, scale: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.2, ease: 'easeInOut' }}
+              className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+              style={{ backgroundImage: `url(${SHOP_SLIDES[activeSlide].image})` }}
+            />
+          </AnimatePresence>
+          {/* Subtle gradient overlays to guarantee pristine readability of text */}
+          <div className="absolute inset-0 bg-gradient-to-b from-dark-bg/95 via-dark-bg/60 to-dark-bg z-10" />
+        </div>
 
-        <div className="max-w-7xl mx-auto flex flex-col items-center text-center">
+        {/* Glow Effects */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand/5 rounded-full blur-[140px] pointer-events-none z-10" />
+        <div className="absolute top-10 right-10 w-96 h-96 bg-brand-blue/5 rounded-full blur-[120px] pointer-events-none z-10" />
+
+        <div className="max-w-7xl mx-auto flex flex-col items-center text-center relative z-20 w-full">
           <motion.div 
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
@@ -213,49 +310,98 @@ CLEMTRIX COMMERCE SOFTWARE LIMITED • ACCRA, GHANA
             <span>Built Specifically for Hospitality & Retail in Ghana</span>
           </motion.div>
 
+          {/* Interactive Shop Type Selector Tabs */}
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.05 }}
+            className="flex flex-wrap items-center justify-center gap-1.5 border border-white/10 bg-slate-900/80 p-1.5 rounded-full max-w-4xl mx-auto mb-8 backdrop-blur-lg"
+          >
+            {SHOP_SLIDES.map((slide, idx) => {
+              const IconComponent = slide.icon;
+              const isSelected = activeSlide === idx;
+              return (
+                <button
+                  key={idx}
+                  onClick={() => setActiveSlide(idx)}
+                  className={`flex items-center gap-1.5 px-3.5 py-2.5 rounded-full text-xs font-extrabold transition-all cursor-pointer ${
+                    isSelected 
+                    ? 'bg-brand text-slate-950 font-black shadow-lg shadow-brand/10' 
+                    : 'text-white/60 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <IconComponent className={`w-3.5 h-3.5 ${isSelected ? 'text-slate-950' : 'text-brand'}`} />
+                  <span>{slide.type}</span>
+                </button>
+              );
+            })}
+          </motion.div>
+
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1 }}
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light text-white leading-[1.1] tracking-tight max-w-5xl"
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[1.12] tracking-tight max-w-5xl"
           >
             Empower Your Business With <br />
-            <span className="font-serif italic text-brand">Ghana&apos;s #1 Intelligent</span> <br />
-            POS & ERP Ecosystem.
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand via-white to-blue-400 drop-shadow-sm font-extrabold">
+              Ghana&apos;s #1 Intelligent
+            </span> <br />
+            <span className="font-serif italic font-medium text-brand">POS & ERP Ecosystem.</span>
           </motion.h1>
 
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
-            className="mt-6 text-base sm:text-lg md:text-xl text-white/60 max-w-3xl leading-relaxed"
+            className="mt-6 text-base sm:text-lg md:text-xl text-slate-300 max-w-3xl leading-relaxed"
           >
-            Say goodbye to inventory leakage, unaccounted cash-drawers, and manual invoicing. Clemtrix is a lightning-fast hybrid POS that handles visual table plans, ingredient recipe engineering, multi-branch bookkeeping, and native GRA tax compliance.
+            Say goodbye to inventory leakage, unaccounted cash-drawers, and manual invoicing. Clemtrix is a lightning-fast hybrid POS that handles visual table plans, ingredient recipe engineering, multi-branch bookkeeping, and native multi-currency accounting.
           </motion.p>
+
+          {/* Dynamic Segment Tagline details showcase */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeSlide}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.4 }}
+              className="mt-6 flex flex-col items-center max-w-2xl"
+            >
+              <div className="inline-flex items-center gap-1.5 text-[10px] font-mono font-black uppercase tracking-wider px-3.5 py-1.5 rounded-full bg-blue-650/20 text-blue-300 border border-blue-500/30 shadow-lg shadow-blue-950/20">
+                <span className="w-1.5 h-1.5 bg-brand rounded-full animate-ping" />
+                Active Class: {SHOP_SLIDES[activeSlide].badge}
+              </div>
+              <p className="text-white text-xs sm:text-sm mt-3.5 font-bold tracking-wide bg-slate-900/80 px-6 py-3 rounded-2xl backdrop-blur-md border border-slate-800 shadow-xl">
+                &ldquo;{SHOP_SLIDES[activeSlide].tagline}&rdquo;
+              </p>
+            </motion.div>
+          </AnimatePresence>
 
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.3 }}
-            className="mt-10 flex flex-col sm:flex-row items-center gap-4 justify-center"
+            className="mt-10 flex flex-col sm:flex-row items-center gap-4 justify-center w-full max-w-md mx-auto"
           >
             <button 
               onClick={() => onNavigate('pos')} 
-              className="w-full sm:w-auto px-10 py-4 bg-white text-dark-bg hover:bg-brand font-bold text-lg rounded-sm shadow-xl hover:scale-[1.03] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 cursor-pointer"
+              className="w-full px-8 py-4 bg-blue-600 hover:bg-brand text-white hover:text-slate-950 font-black text-sm tracking-wider uppercase rounded-full shadow-2xl shadow-blue-650/20 hover:scale-[1.03] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 cursor-pointer border border-blue-500/20"
             >
-              <Smartphone className="w-5 h-5 shrink-0" />
-              Launch POS Touchscreen Terminal
+              <Smartphone className="w-4 h-4 shrink-0" />
+              Launch Live Terminal
             </button>
             <button 
               onClick={() => onNavigate('backoffice')} 
-              className="w-full sm:w-auto px-10 py-4 bg-transparent text-white hover:bg-white/5 font-bold text-lg rounded-sm border border-white/20 transition-all flex items-center justify-center gap-2.5 cursor-pointer"
+              className="w-full px-8 py-4 bg-slate-950/40 text-white hover:text-brand font-black text-xs tracking-wider uppercase rounded-full border border-slate-800 hover:border-brand-blue/40 transition-all flex items-center justify-center gap-2.5 cursor-pointer backdrop-blur-md"
             >
-              <Monitor className="w-5 h-5 text-white/60 shrink-0" />
-              Access Backoffice Cloud ERP
+              <Monitor className="w-4 h-4 text-brand shrink-0" />
+              Backoffice Cloud ERP
             </button>
           </motion.div>
 
-          {/* Quick Stats Panel */}
+          {/* Quick Stats Panel with modern styling */}
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -263,14 +409,14 @@ CLEMTRIX COMMERCE SOFTWARE LIMITED • ACCRA, GHANA
             className="mt-20 w-full max-w-5xl grid grid-cols-2 lg:grid-cols-4 gap-4"
           >
             {[
-              { label: 'Revenue Tracked', val: 'GHS 12M+' },
-              { label: 'Active Terminals', val: '800+' },
-              { label: 'Leakage Reduced', val: 'Up to 92%' },
-              { label: 'System Uptime', val: '99.9%' }
+              { label: 'Revenue Tracked', val: 'GHS 12M+', color: 'text-brand' },
+              { label: 'Active Terminals', val: '800+', color: 'text-blue-400' },
+              { label: 'Leakage Reduced', val: 'Up to 92%', color: 'text-brand' },
+              { label: 'System Uptime', val: '99.9%', color: 'text-emerald-400' }
             ].map((stat, i) => (
-              <div key={i} className="bg-white/5 border border-white/10 rounded-xl p-6 text-center hover:border-brand/40 transition-all">
-                <p className="text-2xl font-light text-white font-mono font-bold tracking-tight">{stat.val}</p>
-                <p className="text-[10px] text-white/40 mt-1 uppercase tracking-widest font-semibold">{stat.label}</p>
+              <div key={i} className="bg-slate-950/60 border border-slate-850 rounded-2xl p-6 text-center hover:border-brand-blue/30 transition-all hover:bg-slate-950/90 shadow-xl hover:shadow-blue-950/10 group">
+                <p className={`text-2xl font-black font-mono tracking-tight ${stat.color} group-hover:scale-105 transition-transform`}>{stat.val}</p>
+                <p className="text-[9px] text-slate-400 mt-2.5 uppercase tracking-widest font-black font-mono">{stat.label}</p>
               </div>
             ))}
           </motion.div>
@@ -282,8 +428,8 @@ CLEMTRIX COMMERCE SOFTWARE LIMITED • ACCRA, GHANA
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="max-w-md">
             <span className="text-xs font-mono font-bold text-brand uppercase tracking-[0.25em] block mb-1">Local Compliance</span>
-            <h3 className="text-lg font-bold text-slate-100">MTN Mobile Money, Telecel Cash & GRA E-Invoicing Integration</h3>
-            <p className="text-xs text-slate-400 mt-1">Accept local network payments directly through the terminal and automatically file with official GRA parameters.</p>
+            <h3 className="text-lg font-bold text-slate-100">MTN Mobile Money & Telecel Cash Network Integration</h3>
+            <p className="text-xs text-slate-400 mt-1">Accept local network payments directly through the terminal to streamline customer checkouts.</p>
           </div>
           <div className="flex flex-wrap items-center gap-8 text-sm font-semibold font-mono text-slate-400">
             <div className="flex items-center gap-2 bg-white/5 px-4 py-2 rounded-lg border border-white/10">
@@ -293,10 +439,6 @@ CLEMTRIX COMMERCE SOFTWARE LIMITED • ACCRA, GHANA
             <div className="flex items-center gap-2 bg-white/5 px-4 py-2 rounded-lg border border-white/10">
               <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse" />
               <span>Telecel Cash</span>
-            </div>
-            <div className="flex items-center gap-2 bg-white/5 px-4 py-2 rounded-lg border border-white/10">
-              <span className="w-2.5 h-2.5 rounded-full bg-brand" />
-              <span>GRA E-Invoicing</span>
             </div>
           </div>
         </div>
@@ -379,6 +521,119 @@ CLEMTRIX COMMERCE SOFTWARE LIMITED • ACCRA, GHANA
         </div>
       </section>
 
+      {/* REAL-WORLD VISUAL SHOWCASE */}
+      <section id="showcase" className="py-24 border-t border-white/5 bg-slate-950 px-6 relative overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-brand/5 rounded-full blur-[140px] pointer-events-none" />
+        
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <span className="text-xs font-mono tracking-[0.25em] text-brand font-bold uppercase block mb-2">Ghanaian Hardware & Deployments</span>
+            <h2 className="text-3xl md:text-5xl font-light text-white tracking-tight">Our POS System in Active Operations</h2>
+            <p className="text-white/60 mt-4 max-w-2xl mx-auto text-sm md:text-base">
+              Explore how the Clemtrix premium touch terminal interface operates dynamically in busy local merchant environments across Accra, Kumasi, and Tema.
+            </p>
+          </div>
+
+          <div className="grid lg:grid-cols-3 gap-8">
+            {/* Environment 1 */}
+            <motion.div 
+              whileHover={{ y: -6 }}
+              className="bg-[#0c0c0c] border border-white/10 rounded-2xl overflow-hidden group hover:border-brand/35 transition-all duration-300"
+            >
+              <div className="relative aspect-[16/9] overflow-hidden bg-slate-900 border-b border-white/10">
+                <img 
+                  src="/src/assets/images/pos_restaurant_1780476705295.png" 
+                  alt="Clemtrix POS running in an elegant restaurant setup in Cantonments, Accra"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex items-end p-4">
+                  <span className="bg-brand/20 backdrop-blur-md text-brand text-[9px] font-mono font-bold uppercase px-2.5 py-1 rounded-sm border border-brand/25">
+                    Hospitality & Fine Dining
+                  </span>
+                </div>
+              </div>
+              <div className="p-6">
+                <h3 className="text-lg font-bold text-white group-hover:text-brand transition-colors">Restaurant Touch Terminals</h3>
+                <p className="text-white/50 text-xs mt-2 leading-relaxed">
+                  Engineered with large touch targets, real-time ticket statuses (KOT), high contrast menus, and multi-currency registers designed for rapid service.
+                </p>
+                <div className="mt-6 pt-5 border-t border-white/5 flex items-center justify-between">
+                  <a href="#download" className="text-brand text-xs font-bold hover:underline flex items-center gap-1.5 uppercase tracking-wider font-mono">
+                    <Download className="w-3.5 h-3.5" /> <span>Get Client Setup</span>
+                  </a>
+                  <span className="text-white/30 text-[10px] font-mono">Accra, Ghana</span>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Environment 2 */}
+            <motion.div 
+              whileHover={{ y: -6 }}
+              className="bg-[#0c0c0c] border border-white/10 rounded-2xl overflow-hidden group hover:border-brand-blue/35 transition-all duration-300"
+            >
+              <div className="relative aspect-[16/9] overflow-hidden bg-slate-900 border-b border-white/10">
+                <img 
+                  src="/src/assets/images/pos_retail_1780476724543.png" 
+                  alt="Clemtrix POS running in a luxury boutique checkout register"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex items-end p-4">
+                  <span className="bg-brand-blue/20 backdrop-blur-md text-brand-blue text-[9px] font-mono font-bold uppercase px-2.5 py-1 rounded-sm border border-brand-blue/25">
+                    Retail & Supermarket Counters
+                  </span>
+                </div>
+              </div>
+              <div className="p-6">
+                <h3 className="text-lg font-bold text-white group-hover:text-brand-blue transition-colors">Boutique Checkout Tablets</h3>
+                <p className="text-white/50 text-xs mt-2 leading-relaxed">
+                  Support for continuous wireless barcode scanner beams, peripheral cash drawers, and high-speed receipt prints with custom thermal layouts.
+                </p>
+                <div className="mt-6 pt-5 border-t border-white/5 flex items-center justify-between">
+                  <a href="#download" className="text-brand-blue text-xs font-bold hover:underline flex items-center gap-1.5 uppercase tracking-wider font-mono">
+                    <Download className="w-3.5 h-3.5" /> <span>Download Now</span>
+                  </a>
+                  <span className="text-white/30 text-[10px] font-mono">Kumasi, Ghana</span>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Environment 3 */}
+            <motion.div 
+              whileHover={{ y: -6 }}
+              className="bg-[#0c0c0c] border border-white/10 rounded-2xl overflow-hidden group hover:border-brand/35 transition-all duration-300"
+            >
+              <div className="relative aspect-[16/9] overflow-hidden bg-slate-900 border-b border-white/10">
+                <img 
+                  src="/src/assets/images/pos_dashboard_1780476740840.png" 
+                  alt="Clemtrix Backoffice secure analytics engine"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex items-end p-4">
+                  <span className="bg-[#a855f7]/20 backdrop-blur-md text-[#c084fc] text-[9px] font-mono font-bold uppercase px-2.5 py-1 rounded-sm border border-[#c084fc]/25">
+                    Backoffice Analytics Cloud
+                  </span>
+                </div>
+              </div>
+              <div className="p-6">
+                <h3 className="text-lg font-bold text-white group-hover:text-[#c084fc] transition-colors">Owner & Admin Telemetry</h3>
+                <p className="text-white/50 text-xs mt-2 leading-relaxed">
+                  Monitor real-time sales curves, track tax splits (VAT/COVID Levy), view active cashier margins, and prevent inventory leakages online from anywhere.
+                </p>
+                <div className="mt-6 pt-5 border-t border-white/5 flex items-center justify-between">
+                  <a href="https://wa.me/233554117978" target="_blank" rel="noreferrer" className="text-[#c084fc] text-xs font-bold hover:underline flex items-center gap-1.5 uppercase tracking-wider font-mono">
+                    <MessageCircle className="w-3.5 h-3.5" /> <span>Request Demo</span>
+                  </a>
+                  <span className="text-white/30 text-[10px] font-mono">Real-Time Sync</span>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* CORE SYSTEM MODULES */}
       <section id="modules" className="bg-white/[0.02] py-24 border-y border-white/10 px-6">
         <div className="max-w-7xl mx-auto">
@@ -404,8 +659,8 @@ CLEMTRIX COMMERCE SOFTWARE LIMITED • ACCRA, GHANA
             {/* module 3 */}
             <div className="p-6 bg-white/5 border border-white/10 rounded-xl hover:border-brand/40 transition-all duration-305">
               <div className="w-10 h-10 bg-brand/10 text-brand rounded-lg flex items-center justify-center mb-4 font-bold font-mono text-sm">03</div>
-              <h4 className="text-lg font-bold text-white">GRA Central Integrator</h4>
-              <p className="text-white/60 text-xs mt-2 leading-relaxed">Automatic application of NHIL, GETFund, Covid Levy and standard VAT. Creates official compliance-ready ledgers saving you days of manual quarterly tax math.</p>
+              <h4 className="text-lg font-bold text-white">Clemtrix Accounts Ledger</h4>
+              <p className="text-white/60 text-xs mt-2 leading-relaxed">Automatic calculation of profit margin, revenue shares, discounts, and visual performance charts. Creates official business-ready ledger records saving you hours of ledger tracking.</p>
             </div>
             {/* module 4 */}
             <div className="p-6 bg-white/5 border border-white/10 rounded-xl hover:border-brand/40 transition-all duration-305">
@@ -540,7 +795,7 @@ CLEMTRIX COMMERCE SOFTWARE LIMITED • ACCRA, GHANA
                 </span>
                 <h3 className="text-2xl font-semibold text-white">Need Manual Installation?</h3>
                 <p className="text-white/60 text-sm mt-3 leading-relaxed">
-                  Avoid setup risks or system config errors. Our dedicated developer team will assist you with layout blueprints, ingredients recipe mapping, thermal receipt printer connectivity, and GRA tax configuration directly.
+                  Avoid setup risks or system config errors. Our dedicated developer team will assist you with layout blueprints, ingredients recipe mapping, thermal receipt printer connectivity, and backend cloud configuration directly.
                 </p>
 
                 <div className="mt-6 space-y-4 pt-6 border-t border-white/5 text-xs text-white/80 font-sans">
@@ -549,7 +804,7 @@ CLEMTRIX COMMERCE SOFTWARE LIMITED • ACCRA, GHANA
                     <ul className="space-y-1.5 pl-4 list-disc text-white/60 text-[11px]">
                       <li>Thermal Receipt Printer raw driver configurations</li>
                       <li>Standard inventory recipe mapping guidance</li>
-                      <li>Official GRA compliance VAT profiles setup</li>
+                      <li>Official company invoice credentials setup</li>
                       <li>Accra & Kumasi local dispatch team coordination</li>
                     </ul>
                   </div>
@@ -681,93 +936,271 @@ CLEMTRIX COMMERCE SOFTWARE LIMITED • ACCRA, GHANA
         </div>
       </section>
 
-      {/* PRICING SECTION */}
-      <section id="pricing" className="py-24 bg-white/[0.01] px-6 border-t border-white/10">
+      {/* TESTIMONIALS SECTION */}
+      <section id="testimonials" className="py-24 bg-slate-950/40 px-6 border-t border-slate-900/50">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <span className="text-xs font-mono tracking-[0.25em] text-brand font-bold uppercase font-sans">Transparent Local Pricing</span>
-            <h2 className="text-3xl md:text-4xl font-light mt-2 text-white">Affordable Plans, Infinite Scaling</h2>
-            <p className="text-white/60 mt-4 max-w-2xl mx-auto text-sm">Cancel or update your package at any time. No hidden setup costs. Local training included.</p>
+          <div className="text-center mb-16 space-y-2">
+            <span className="text-xs font-mono tracking-[0.25em] text-brand font-bold uppercase">
+              Proven Across Hospitality & Retail
+            </span>
+            <h2 className="text-3xl md:text-5xl font-black text-white leading-tight">
+              Loved by Ghanaian Business Owners
+            </h2>
+            <p className="text-slate-400 mt-4 max-w-2xl mx-auto text-xs sm:text-sm">
+              Discover how restaurants, high-traffic retailers, and local boutiques trimmed down inventory leakages and accelerated register checks.
+            </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {/* pack 1 */}
-            <div className="bg-white/5 border border-white/10 rounded-xl p-8 flex flex-col justify-between">
-              <div>
-                <span className="text-xs font-mono font-bold text-white/40 uppercase tracking-widest block mb-1">Retail Kiosks / Micro</span>
-                <h3 className="text-xl font-bold text-white">Clemtrix Lite</h3>
-                <p className="text-white/50 text-xs mt-2">Perfect starting point for small container stalls, neighborhood grocery kiosks, or micro bars.</p>
-                
-                <div className="my-8">
-                  <span className="text-3xl font-light font-mono font-bold text-white">GHS 299</span>
-                  <span className="text-white/40 text-xs"> /month</span>
+            
+            {/* Testimonial 1 */}
+            <div className="bg-slate-900/30 border border-slate-800 rounded-2xl p-8 flex flex-col justify-between hover:border-slate-700/60 transition-all">
+              <div className="space-y-4">
+                <div className="flex gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Sparkles key={i} className="w-3.5 h-3.5 text-brand" />
+                  ))}
                 </div>
-
-                <div className="border-t border-white/5 pt-6 space-y-3.5 text-xs text-white/70">
-                  <div className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-brand" /> 1 POS Terminal Access</div>
-                  <div className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-brand" /> Basic Inventory Track</div>
-                  <div className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-brand" /> MTN Momo Direct logs</div>
-                  <div className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-brand" /> Shift reconciliation summary</div>
+                <p className="text-slate-300 text-xs sm:text-sm italic leading-relaxed">
+                  &ldquo;Mapping recipes was our biggest administrative hurdle. With Clemtrix, when our bartenders check out a signature drink, the exact quantities of spirits and garnishes deplete automatically. Our inventory leaks dropped to absolutely zero in month one.&rdquo;
+                </p>
+              </div>
+              <div className="flex items-center gap-3.5 mt-8 pt-6 border-t border-slate-800/60">
+                <div className="w-10 h-10 rounded-full bg-brand/10 border border-brand/20 flex items-center justify-center text-brand font-black text-xs">
+                  CM
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-white">Mrs. Comfort Mensah</h4>
+                  <p className="text-[10px] text-slate-500 font-medium">Foyer & Garden Lounge &bull; Airport Residential, Accra</p>
                 </div>
               </div>
-              <button onClick={() => onNavigate('pos')} className="w-full mt-8 py-3 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-lg text-xs font-bold transition-all cursor-pointer">
-                Try Free Trial Demo
+            </div>
+
+            {/* Testimonial 2 */}
+            <div className="bg-slate-900/30 border border-slate-800 rounded-2xl p-8 flex flex-col justify-between hover:border-slate-700/60 transition-all">
+              <div className="space-y-4">
+                <div className="flex gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Sparkles key={i} className="w-3.5 h-3.5 text-brand" />
+                  ))}
+                </div>
+                <p className="text-slate-300 text-xs sm:text-sm italic leading-relaxed">
+                  &ldquo;In Kumasi, fiber breakdowns can interrupt operations for hours. Clemtrix is legendary because its hybrid server runs fully locally, buffering sales logs in active internal sync queues. The moment connectivity gets restored, everything syncs instantly without packet loss.&rdquo;
+                </p>
+              </div>
+              <div className="flex items-center gap-3.5 mt-8 pt-6 border-t border-slate-800/60">
+                <div className="w-10 h-10 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 font-black text-xs">
+                  KO
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-white">Kofi Owusu</h4>
+                  <p className="text-[10px] text-slate-500 font-medium">Adum Wholesalers &bull; Adum, Kumasi</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Testimonial 3 */}
+            <div className="bg-slate-900/30 border border-slate-800 rounded-2xl p-8 flex flex-col justify-between hover:border-slate-700/60 transition-all">
+              <div className="space-y-4">
+                <div className="flex gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Sparkles key={i} className="w-3.5 h-3.5 text-brand" />
+                  ))}
+                </div>
+                <p className="text-slate-300 text-xs sm:text-sm italic leading-relaxed">
+                  &ldquo;Switching raw rates between GHS and USD seamlessly at checkouts keeps our boutiques pricing completely fluid. It is visually stunning, easy to learn for young cashiers, and generates flawless multi-branch backoffice ledger coordinates.&rdquo;
+                </p>
+              </div>
+              <div className="flex items-center gap-3.5 mt-8 pt-6 border-t border-slate-800/60">
+                <div className="w-10 h-10 rounded-full bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 font-black text-xs">
+                  EA
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-white">Evelyn Appiah</h4>
+                  <p className="text-[10px] text-slate-500 font-medium">Satori Boutique &bull; Osu Mall / East Legon</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* PRICING SECTION */}
+      <section id="pricing" className="py-24 bg-slate-950/60 px-6 border-t border-slate-900">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16 space-y-2">
+            <span className="text-xs font-mono tracking-[0.25em] text-brand font-bold uppercase">
+              Interactive License & Subscription Guides
+            </span>
+            <h2 className="text-3xl md:text-5xl font-black text-white leading-tight">
+              Honest transparent rates. Built to scale your business.
+            </h2>
+            <p className="text-slate-400 mt-4 max-w-2xl mx-auto text-xs sm:text-sm">
+              Deploy our bulletproof local software offline or cloud-connected. Select the setup model that fits your business environment best.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            
+            {/* CARD 1: LOCAL MANUAL INSTALLATION */}
+            <div className="bg-slate-900/40 border border-slate-800 rounded-3xl p-8 flex flex-col justify-between transition-all hover:border-slate-700 hover:bg-slate-900/60">
+              <div>
+                <div className="flex justify-between items-start gap-4">
+                  <div>
+                    <span className="text-[10px] font-mono font-black text-brand uppercase tracking-widest bg-brand/10 px-2.5 py-1 rounded-md block w-fit mb-3">
+                      Onsite Setup (Ghana)
+                    </span>
+                    <h3 className="text-xl font-bold text-white">Local Manual Installation</h3>
+                  </div>
+                  <Building2 className="w-5 h-5 text-slate-500 shrink-0" />
+                </div>
+                <p className="text-slate-400 text-xs mt-3 leading-normal">
+                  Our professional dispatch technicians come directly to your store, set up thermal drawers, connect thermal printers, configure local routers, and train your crew.
+                </p>
+                
+                <div className="my-8 space-y-1 bg-slate-950/50 p-4 rounded-xl border border-slate-850">
+                  <span className="text-xs text-slate-500 block uppercase font-bold font-mono">One-time installation</span>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-4xl font-extrabold text-white font-mono">GHS 1,500</span>
+                  </div>
+                </div>
+
+                <div className="border-t border-slate-800 pt-6 space-y-3.5 text-xs text-slate-350">
+                  <div className="flex items-start gap-2.5">
+                    <Check className="w-4 h-4 text-brand shrink-0 mt-0.5" />
+                    <span><strong>GHS 300</strong> mandatory 1-on-1 professional staff training fee</span>
+                  </div>
+                  <div className="flex items-start gap-2.5">
+                    <Check className="w-4 h-4 text-brand shrink-0 mt-0.5" />
+                    <span><strong>GHS 800</strong> annual license & contract renewal fee</span>
+                  </div>
+                  <div className="flex items-start gap-2.5">
+                    <Check className="w-4 h-4 text-brand shrink-0 mt-0.5" />
+                    <span>Unlimited offline POS terminal access with internal recipe mapping support</span>
+                  </div>
+                  <div className="flex items-start gap-2.5">
+                    <Check className="w-4 h-4 text-brand shrink-0 mt-0.5" />
+                    <span>Full physical support dispatcher dispatch visits within Accra & Kumasi</span>
+                  </div>
+                </div>
+              </div>
+              
+              <a
+                href="https://wa.me/233554117978"
+                target="_blank"
+                rel="noreferrer"
+                className="w-full text-center mt-8 py-3.5 bg-slate-950 hover:bg-slate-900 text-white border border-slate-800 rounded-xl text-xs font-bold transition-all cursor-pointer block"
+              >
+                Book Accra/Kumasi Installers
+              </a>
+            </div>
+
+            {/* CARD 2: ONLINE SELF-INSTALLATION */}
+            <div className="bg-slate-900/40 border-2 border-brand/50 shadow-2xl shadow-brand/5 rounded-3xl p-8 flex flex-col justify-between relative transform lg:-translate-y-2 hover:bg-slate-900/60 transition-all">
+              <div className="absolute top-0 right-8 -translate-y-1/2 bg-brand text-slate-950 text-[9px] uppercase tracking-[0.2em] font-black px-3.5 py-1 rounded-full shadow-lg">
+                Recommended Global Download
+              </div>
+
+              <div>
+                <div className="flex justify-between items-start gap-4">
+                  <div>
+                    <span className="text-[10px] font-mono font-black text-blue-400 uppercase tracking-widest bg-blue-500/10 px-2.5 py-1 rounded-md block w-fit mb-3">
+                      Digital Executable
+                    </span>
+                    <h3 className="text-xl font-bold text-white">Online Self-Installation</h3>
+                  </div>
+                  <Download className="w-5 h-5 text-brand shrink-0" />
+                </div>
+                <p className="text-slate-350 text-xs mt-3 leading-normal">
+                  Instantly download the standalone secure client installer. Boot your own terminal hardware on Windows/Linux in under 3 minutes, with auto dual-currency.
+                </p>
+                
+                <div className="my-8 space-y-1 bg-slate-950/50 p-4 rounded-xl border border-slate-850">
+                  <span className="text-xs text-slate-500 block uppercase font-bold font-mono">Download license</span>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-4xl font-extrabold text-white font-mono">$200</span>
+                    <span className="text-slate-400 text-xs">one-time digital bundle</span>
+                  </div>
+                </div>
+
+                <div className="border-t border-slate-800/80 pt-6 space-y-3.5 text-xs text-slate-300">
+                  <div className="flex items-start gap-2.5">
+                    <Check className="w-4 h-4 text-brand shrink-0 mt-0.5" />
+                    <span><strong>$100</strong> yearly software contract & backup renewal fee</span>
+                  </div>
+                  <div className="flex items-start gap-2.5">
+                    <Check className="w-4 h-4 text-brand shrink-0 mt-0.5" />
+                    <span>Credit & Debit card payment setup pre-built in terminal settings</span>
+                  </div>
+                  <div className="flex items-start gap-2.5">
+                    <Check className="w-4 h-4 text-brand shrink-0 mt-0.5" />
+                    <span>Instant automatic updates over secure global server nodes</span>
+                  </div>
+                  <div className="flex items-start gap-2.5">
+                    <Check className="w-4 h-4 text-brand shrink-0 mt-0.5" />
+                    <span>Hybrid offline synchronization with absolute zero sales packet drop</span>
+                  </div>
+                </div>
+              </div>
+
+              <button 
+                onClick={handleDownloadExe}
+                className="w-full mt-8 py-3.5 bg-brand hover:bg-brand/90 text-slate-950 rounded-xl text-xs font-black shadow-lg shadow-brand/10 transition-all cursor-pointer active:scale-[0.98]"
+              >
+                Download Client File (.exe)
               </button>
             </div>
 
-            {/* pack 2 */}
-            <div className="bg-white/5 border-2 border-brand shadow-xl shadow-brand/5 rounded-xl p-8 flex flex-col justify-between relative transform lg:-translate-y-2">
-              <div className="absolute top-0 right-6 -translate-y-1/2 bg-brand text-dark-bg text-[9px] uppercase tracking-[0.2em] font-extrabold px-3 py-1 rounded-sm">
-                Recommended
-              </div>
-
+            {/* CARD 3: 15-DAY FREE TRIAL INFO */}
+            <div className="bg-slate-900/40 border border-slate-800 rounded-3xl p-8 flex flex-col justify-between transition-all hover:border-slate-700 hover:bg-slate-900/60">
               <div>
-                <span className="text-xs font-mono font-bold text-brand uppercase tracking-widest block mb-1">Standard Restaurants & Retail</span>
-                <h3 className="text-xl font-bold text-white">Clemtrix Growth</h3>
-                <p className="text-white/60 text-xs mt-2">Ideal for busy restaurants, multi-terminal supermarkets, boutiques, and active local bars.</p>
+                <div className="flex justify-between items-start gap-4">
+                  <div>
+                    <span className="text-[10px] font-mono font-black text-emerald-400 uppercase tracking-widest bg-emerald-500/10 px-2.5 py-1 rounded-md block w-fit mb-3">
+                      Risk-Free Evaluation
+                    </span>
+                    <h3 className="text-xl font-bold text-white">15-Day Free Trial</h3>
+                  </div>
+                  <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0" />
+                </div>
+                <p className="text-slate-400 text-xs mt-3 leading-normal">
+                  Evaluate all Clemtrix POS features with completely zero credit card or upfront deposit required. All local registers, visual tables, and shift ledger analytics are active.
+                </p>
                 
-                <div className="my-8">
-                  <span className="text-3xl font-light font-mono font-bold text-white">GHS 599</span>
-                  <span className="text-white/40 text-xs"> /month</span>
+                {/* Static Pricing Box */}
+                <div className="my-8 space-y-1 bg-slate-950/50 p-4 rounded-xl border border-slate-850">
+                  <span className="text-xs text-slate-500 block uppercase font-bold font-mono">Starter License</span>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-4xl font-extrabold text-white font-mono">GHS 0</span>
+                    <span className="text-slate-400 text-xs">/ 15 days access</span>
+                  </div>
                 </div>
 
-                <div className="border-t border-white/10 pt-6 space-y-3.5 text-xs text-white/80 font-sans">
-                  <div className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-brand font-bold" /> Unlimited POS terminals</div>
-                  <div className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-brand font-bold" /> Interactive Visual Floor Plans</div>
-                  <div className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-brand font-bold" /> Recipe Ingredients depletion</div>
-                  <div className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-brand font-bold" /> GRA Compliance calculations</div>
-                  <div className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-brand font-bold" /> Dual Currency toggle (GHS / USD)</div>
+                <div className="border-t border-slate-800 pt-6 space-y-3.5 text-xs text-slate-350">
+                  <div className="flex items-start gap-2.5">
+                    <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <span>Instant automatic activation, pre-approved for developers and owners</span>
+                  </div>
+                  <div className="flex items-start gap-2.5">
+                    <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <span>Real-time local inventory buffers & catalog recipe depletes fully tested</span>
+                  </div>
+                  <div className="flex items-start gap-2.5">
+                    <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <span>Allows mock MTN Momo direct checkouts and shifts cash drawer audits</span>
+                  </div>
                 </div>
               </div>
-              <button onClick={() => onNavigate('pos')} className="w-full mt-8 py-3.5 bg-brand hover:bg-brand/90 text-dark-bg rounded-lg text-xs font-bold shadow-lg shadow-brand/10 active:scale-[0.98] transition-all cursor-pointer">
-                Access Instant Interactive Demo
+
+              <button 
+                onClick={() => onNavigate('pos')}
+                className="w-full mt-8 py-3.5 bg-white/5 hover:bg-white/10 text-white border border-white/10 hover:border-white/20 rounded-xl text-xs font-bold transition-all cursor-pointer"
+              >
+                Launch Instant Free Trial Register
               </button>
             </div>
 
-            {/* pack 3 */}
-            <div className="bg-white/5 border border-white/10 rounded-xl p-8 flex flex-col justify-between">
-              <div>
-                <span className="text-xs font-mono font-bold text-white/40 uppercase tracking-widest block mb-1">Multi-site franchises</span>
-                <h3 className="text-xl font-bold text-white">Clemtrix Enterprise</h3>
-                <p className="text-white/50 text-xs mt-2">Heavy-duty solution for restaurants/retail giants with several properties and high volumes.</p>
-                
-                <div className="my-8">
-                  <span className="text-3xl font-light font-mono font-bold text-white">GHS 1,299</span>
-                  <span className="text-white/40 text-xs"> /month</span>
-                </div>
-
-                <div className="border-t border-white/5 pt-6 space-y-3.5 text-xs text-white/70">
-                  <div className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-brand" /> Multi-branch real-time dashboard</div>
-                  <div className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-brand" /> Deep General Ledger bookkeeping</div>
-                  <div className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-brand" /> Multi-warehouse supplier routing</div>
-                  <div className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-brand" /> Dedicate GRA Sandbox API keys</div>
-                  <div className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-brand" /> 24/7 dedicated local field support</div>
-                </div>
-              </div>
-              <button onClick={() => onNavigate('backoffice')} className="w-full mt-8 py-3 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-lg text-xs font-bold transition-all cursor-pointer">
-                Consult ERP Options
-              </button>
-            </div>
           </div>
         </div>
       </section>
@@ -832,12 +1265,12 @@ CLEMTRIX COMMERCE SOFTWARE LIMITED • ACCRA, GHANA
             </ul>
           </div>
           <div>
-            <h5 className="text-xs font-bold text-white uppercase tracking-widest mb-4">GRA Fiscalization</h5>
+            <h5 className="text-xs font-bold text-white uppercase tracking-widest mb-4">Core Systems</h5>
             <ul className="space-y-2.5 text-white/50">
-              <li><a href="#faq" className="hover:text-brand">Ghana VAT Computing (15%)</a></li>
-              <li><a href="#faq" className="hover:text-brand">GETFund Rate Levy (2.5%)</a></li>
-              <li><a href="#faq" className="hover:text-brand">NHIL Rate Levy (2.5%)</a></li>
-              <li><a href="#faq" className="hover:text-brand">COVID-19 Health Recovery (1%)</a></li>
+              <li><a href="#faq" className="hover:text-brand">Visual Floor Maps</a></li>
+              <li><a href="#faq" className="hover:text-brand">Recipe Cost Depletion</a></li>
+              <li><a href="#faq" className="hover:text-brand">Multi-Branch Sync</a></li>
+              <li><a href="#faq" className="hover:text-brand">Offline Hybrid Node</a></li>
             </ul>
           </div>
           <div>
@@ -860,7 +1293,7 @@ CLEMTRIX COMMERCE SOFTWARE LIMITED • ACCRA, GHANA
         </div>
 
         <div className="max-w-7xl mx-auto border-t border-white/5 pt-8 flex flex-col sm:flex-row items-center justify-between text-white/30 gap-4">
-          <p>© 2026 Clemtrix POS Limited. All rights reserved. Registered in Ghana under GRA Compliance.</p>
+          <p>© 2026 Clemtrix POS Limited. All rights reserved. Locally Hosted & Enterprise Caliber.</p>
           <div className="flex gap-6">
             <a href="#" className="hover:text-slate-400">Privacy Policy</a>
             <a href="#" className="hover:text-slate-400">Terms of Service</a>

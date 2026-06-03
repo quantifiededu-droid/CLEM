@@ -6,7 +6,7 @@ import {
   CheckCircle2, Calculator, Percent, Sparkles, Clock, Coins, Lock,
   ChevronRight, RefreshCw, Layers
 } from 'lucide-react';
-import { Product, Table, Sale, Shift, OrderItem, TaxComponent } from '../types';
+import { Product, Table, Sale, Shift, OrderItem, TaxComponent, BusinessSettings, StoreKeeper } from '../types';
 
 interface PosTerminalProps {
   products: Product[];
@@ -18,6 +18,12 @@ interface PosTerminalProps {
   activeShift: Shift | null;
   onCloseShift: (actualCash: number) => void;
   onNavigate: (route: 'landing' | 'pos' | 'backoffice') => void;
+  businessSettings: BusinessSettings;
+  storeKeepers: StoreKeeper[];
+  isOnline: boolean;
+  setIsOnline: (online: boolean) => void;
+  offlineSyncQueue: Sale[];
+  setOfflineSyncQueue: React.Dispatch<React.SetStateAction<Sale[]>>;
 }
 
 export default function PosTerminal({
@@ -29,7 +35,13 @@ export default function PosTerminal({
   onAddSale,
   activeShift,
   onCloseShift,
-  onNavigate
+  onNavigate,
+  businessSettings,
+  storeKeepers,
+  isOnline,
+  setIsOnline,
+  offlineSyncQueue,
+  setOfflineSyncQueue
 }: PosTerminalProps) {
   // POS System Mode
   const [posMode, setPosMode] = useState<'hospitality' | 'retail'>('hospitality');
@@ -44,7 +56,7 @@ export default function PosTerminal({
   const [cartDiscount, setCartDiscount] = useState<number>(0); // percent e.g. 5, 10
   const [customerName, setCustomerName] = useState<string>('');
   const [customerPhone, setCustomerPhone] = useState<string>('');
-  const [selectedWaiter, setSelectedWaiter] = useState<string>('Ama');
+  const [selectedWaiter, setSelectedWaiter] = useState<string>(storeKeepers[0]?.name || 'Ama Osei');
 
   // Checkout states
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
@@ -180,42 +192,20 @@ export default function PosTerminal({
     const discountAmount = subtotal * (cartDiscount / 100);
     const taxableSubtotal = subtotal - discountAmount;
 
-    // Ghana Compliance Taxes: Applied sequentially
-    // GETFund = 2.5% of net price
-    // NHIL = 2.5% of net price
-    // Covid Levy = 1% of net price
-    // VAT = 15% of (net price + GETFund + NHIL + Covid Levy)
-    const getfundRate = 0.025;
-    const nhilRate = 0.025;
-    const covidRate = 0.01;
-    const vatRate = 0.15;
-
-    const getfund = taxableSubtotal * getfundRate;
-    const nhil = taxableSubtotal * nhilRate;
-    const covid = taxableSubtotal * covidRate;
-    
-    const vatBasis = taxableSubtotal + getfund + nhil + covid;
-    const vat = vatBasis * vatRate;
-
-    const taxAmount = getfund + nhil + covid + vat;
-    const totalGHS = taxableSubtotal + taxAmount;
+    // Standard calculations (Excluding complex GRA tax splits)
+    const totalGHS = taxableSubtotal;
     const totalUSD = totalGHS / GHS_USD_RATE;
 
-    const taxesArray: TaxComponent[] = [
-      { name: 'GETFund (2.5%)', rate: getfundRate, amount: parseFloat(getfund.toFixed(2)) },
-      { name: 'NHIL (2.5%)', rate: nhilRate, amount: parseFloat(nhil.toFixed(2)) },
-      { name: 'Covid Levy (1.0%)', rate: covidRate, amount: parseFloat(covid.toFixed(2)) },
-      { name: 'VAT (15%)', rate: vatRate, amount: parseFloat(vat.toFixed(2)) }
-    ];
+    const taxesArray: TaxComponent[] = [];
 
     return {
       subtotal,
       discountAmount,
       taxableSubtotal,
-      getfund,
-      nhil,
-      covid,
-      vat,
+      getfund: 0,
+      nhil: 0,
+      covid: 0,
+      vat: 0,
       totalGHS,
       totalUSD,
       taxes: taxesArray
@@ -303,7 +293,12 @@ export default function PosTerminal({
     };
 
     // Update global databases
-    onAddSale(newSale);
+    if (isOnline) {
+      onAddSale(newSale);
+    } else {
+      setOfflineSyncQueue(prev => [...prev, newSale]);
+      onAddSale(newSale); // Also update local active receipts so visual telemetry is correct
+    }
     
     // Deduct stock levels in warehouse
     currentCart.forEach(item => {
@@ -369,6 +364,39 @@ export default function PosTerminal({
             <span className="font-medium mr-1">Cashier:</span>
             <span className="font-semibold text-slate-200">{activeShift?.cashierName || 'Demo Admin'}</span>
             <span className="w-1.5 h-1.5 bg-brand rounded-full animate-ping ml-1" />
+          </div>
+
+          {/* Real-time Connection / Sync controller */}
+          <div className="hidden md:flex items-center gap-2 pl-3 ml-2 border-l border-slate-800">
+            <button
+              onClick={() => {
+                if (!isOnline) {
+                  // Simulate auto-sync on reconnect (automatic sync!)
+                  const queueCount = offlineSyncQueue.length;
+                  if (queueCount > 0) {
+                    alert(`⚡ Connection Restored! Automatic sync triggered: successfully synchronized ${queueCount} buffered checkout record(s) with our cloud database ledger!`);
+                    setOfflineSyncQueue([]);
+                  }
+                  setIsOnline(true);
+                } else {
+                  setIsOnline(false);
+                }
+              }}
+              className={`px-2.5 py-1 rounded-lg text-[10px] font-mono font-bold flex items-center gap-1.5 transition-all text-left cursor-pointer ${
+                isOnline 
+                ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20' 
+                : 'bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 animate-pulse'
+              }`}
+              title="Click to simulate going offline or online"
+            >
+              <RefreshCw className={`w-3 h-3 ${isOnline ? 'animate-none' : 'animate-spin'}`} />
+              <span>{isOnline ? 'CLOUD SYNC ONLINE' : 'WORKING OFFLINE READY'}</span>
+            </button>
+            {offlineSyncQueue.length > 0 && (
+              <span className="text-[10px] bg-amber-500 text-slate-950 font-mono font-black px-1.5 py-0.5 rounded animate-bounce">
+                {offlineSyncQueue.length} PENDING
+              </span>
+            )}
           </div>
         </div>
 
@@ -857,47 +885,34 @@ export default function PosTerminal({
               <div className="space-y-1.5 border-b border-slate-850/40 pb-3 text-xs text-slate-400">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span className="font-mono text-slate-300 font-medium">GHS {totals.subtotal.toFixed(2)}</span>
+                  <span className="font-mono text-slate-300 font-medium">{businessSettings.currency} {totals.subtotal.toFixed(2)}</span>
                 </div>
                 {totals.discountAmount > 0 && (
                   <div className="flex justify-between text-red-400">
                     <span>Discount Included ({cartDiscount}%)</span>
-                    <span className="font-mono">-GHS {totals.discountAmount.toFixed(2)}</span>
+                    <span className="font-mono">-{businessSettings.currency} {totals.discountAmount.toFixed(2)}</span>
                   </div>
                 )}
                 
-                {/* Ghana Taxes sequential computation view */}
-                <div className="bg-slate-950/40 p-2 rounded-lg space-y-1 mt-1 text-[11px]">
-                  <div className="flex justify-between opacity-80 text-[10px]">
-                    <span>GETFund (2.5% of net)</span>
-                    <span className="font-mono">GHS {totals.getfund.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between opacity-80 text-[10px]">
-                    <span>NHIL (2.5% of net)</span>
-                    <span className="font-mono">GHS {totals.nhil.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between opacity-80 text-[10px]">
-                    <span>Covid-19 Health Levy (1.0% of net)</span>
-                    <span className="font-mono">GHS {totals.covid.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between opacity-80 text-[10px]">
-                    <span>VAT (15% of fiscal basis)</span>
-                    <span className="font-mono">GHS {totals.vat.toFixed(2)}</span>
-                  </div>
-                </div>
               </div>
 
               {/* Multi currency GHS & USD displaying main block */}
               <div className="flex items-center justify-between pt-1">
                 <div>
-                  <span className="text-[10px] text-slate-500 block uppercase font-black tracking-wide">Grand Total</span>
-                  <span className="text-2xl font-black font-mono text-brand">GH₵ {totals.totalGHS.toFixed(2)}</span>
+                  <span className="text-[10px] text-slate-500 block uppercase font-black tracking-wide">Grand Total ({businessSettings.currency})</span>
+                  <span className="text-2xl font-black font-mono text-brand">{businessSettings.currencySymbol} {totals.totalGHS.toFixed(2)}</span>
                 </div>
-                <div className="text-right">
-                  <span className="text-[9px] text-slate-500 uppercase font-bold block">US Dollar Offset</span>
-                  <span className="text-base font-black font-mono text-slate-300">${totals.totalUSD.toFixed(2)}</span>
-                  <span className="text-[8px] text-slate-600 block">Rate GHS {GHS_USD_RATE.toFixed(2)}</span>
-                </div>
+                {businessSettings.currency === 'GHS' ? (
+                  <div className="text-right">
+                    <span className="text-[9px] text-slate-500 uppercase font-bold block">US Dollar Offset</span>
+                    <span className="text-base font-black font-mono text-slate-300">${totals.totalUSD.toFixed(2)}</span>
+                    <span className="text-[8px] text-slate-600 block">Rate GHS {GHS_USD_RATE.toFixed(2)}</span>
+                  </div>
+                ) : (
+                  <div className="text-right text-slate-500 text-[10px] font-mono font-semibold">
+                    Synced online
+                  </div>
+                )}
               </div>
 
               {/* Complete drawer action button click triggers */}
@@ -1120,10 +1135,11 @@ export default function PosTerminal({
               >
                 {/* Simulated thermal bill paper serrated edge */}
                 <div className="text-center pb-4 border-b border-dashed border-neutral-300">
-                  <h3 className="text-base font-black tracking-tight text-neutral-800 leading-none">CLEMTRIX POS</h3>
-                  <span className="text-[9px] uppercase tracking-widest text-neutral-500 mt-1.5 block">East Legon, Spintex Road, Accra</span>
-                  <span className="text-[9px] text-neutral-400 block mt-0.5">Tel: +233 (0) 54 838 1234</span>
-                  <span className="text-[9px] text-neutral-400 block mt-0.5">VAT Reg: G02431X920L</span>
+                  <h3 className="text-sm font-black tracking-tight text-neutral-800 leading-tight uppercase">
+                    {businessSettings.businessName}
+                  </h3>
+                  <span className="text-[9px] uppercase tracking-widest text-neutral-500 mt-1.5 block">Store Register Receipt</span>
+                  <span className="text-[9px] text-neutral-400 block mt-0.5">Tel: {businessSettings.businessPhone}</span>
                 </div>
 
                 <div className="py-3 border-b border-dashed border-neutral-300 text-[10px] text-neutral-600 space-y-1">
@@ -1140,7 +1156,7 @@ export default function PosTerminal({
                 <div className="py-4 border-b border-dashed border-neutral-350 space-y-2 text-[11px] text-neutral-700">
                   <div className="flex justify-between font-bold text-neutral-800 text-[10px] uppercase pb-1 border-b border-neutral-200">
                     <span>Item & Qty</span>
-                    <span>Total GHS</span>
+                    <span>Total ({businessSettings.currency})</span>
                   </div>
                   {createdReceipt.items.map((it, i) => (
                     <div key={i} className="flex justify-between">
@@ -1152,40 +1168,39 @@ export default function PosTerminal({
                   ))}
                 </div>
 
-                {/* Computational aggregates with GRA tax splits */}
+                {/* Computational aggregates */}
                 <div className="py-4 border-b border-dashed border-neutral-300 space-y-1.5">
                   <div className="flex justify-between">
-                    <span>Subtotal GHS</span>
+                    <span>Subtotal ({businessSettings.currency})</span>
                     <span>{createdReceipt.subtotal.toFixed(2)}</span>
-                  </div>
-                  
-                  {/* Tax splits displayed separately */}
-                  <div className="space-y-1 pl-3 text-[10px] text-neutral-550 border-l border-neutral-200">
-                    {createdReceipt.taxes.map((t, idx) => (
-                      <div key={idx} className="flex justify-between">
-                        <span>{t.name}</span>
-                        <span>{t.amount.toFixed(2)}</span>
-                      </div>
-                    ))}
                   </div>
 
                   <div className="flex justify-between font-black text-neutral-800 text-sm border-t border-neutral-200 pt-3 mt-1.5">
-                    <span>TOTAL GHS</span>
-                    <span>GH₵ {createdReceipt.total.toFixed(2)}</span>
+                    <span>TOTAL {businessSettings.currency}</span>
+                    <span>{businessSettings.currencySymbol} {createdReceipt.total.toFixed(2)}</span>
                   </div>
 
-                  <div className="flex justify-between text-[11px] font-bold text-neutral-500">
-                    <span>US DOLLAR EQUIV</span>
-                    <span>${createdReceipt.totalUSD.toFixed(2)}</span>
-                  </div>
+                  {businessSettings.currency === 'GHS' && (
+                    <div className="flex justify-between text-[11px] font-bold text-neutral-500">
+                      <span>US DOLLAR EQUIV</span>
+                      <span>${createdReceipt.totalUSD.toFixed(2)}</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Bottom Receipt Notice Bar */}
                 <div className="text-center pt-5 pb-1 text-[9px] text-neutral-400 uppercase leading-relaxed">
-                  <div className="flex items-center justify-center gap-1.5 text-teal-800 font-bold mb-1">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-teal-700" />
-                    <span>Fiscalized GRA Compliant</span>
+                  <div className="flex items-center justify-center gap-1.5 text-teal-850 font-bold mb-1">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-teal-800" />
+                    <span>Transaction Verified & Secured</span>
                   </div>
+                  
+                  {businessSettings.isReceiptOptional && (
+                    <div className="my-1.5 py-1 px-2 border border-slate-300 bg-slate-100 text-[8px] text-slate-500 rounded font-sans tracking-normal leading-normal">
+                      * Printing is marked optional in ERP system settings.
+                    </div>
+                  )}
+
                   <p>Thank you for your business!</p>
                   <p>Powered by Clemtrix POS & ERP</p>
                   
@@ -1197,23 +1212,36 @@ export default function PosTerminal({
               </div>
 
               {/* simulated receipt print drawer base */}
-              <div className="bg-neutral-200 border-x border-b border-slate-350 p-4 rounded-b-3xl gap-2 flex">
-                <button
-                  onClick={() => {
-                    // Trigger native browser document printing
-                    window.print();
-                  }}
-                  className="flex-1 py-3 bg-neutral-100 hover:bg-neutral-50 text-neutral-800 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 border border-neutral-350 active:scale-95 transition-all"
-                >
-                  <Printer className="w-4 h-4" />
-                  <span>Physical Print</span>
-                </button>
-                <button
-                  onClick={() => setIsReceiptModalOpen(false)}
-                  className="flex-1 py-3 bg-slate-900 hover:bg-slate-850 text-white font-bold rounded-xl text-xs flex items-center justify-center active:scale-95 transition-all"
-                >
-                  Done & Exit
-                </button>
+              <div className="bg-neutral-200 border-x border-b border-slate-350 p-4 rounded-b-3xl gap-2 flex flex-col">
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      // Trigger native browser document printing
+                      window.print();
+                    }}
+                    className="flex-1 py-3 bg-neutral-100 hover:bg-neutral-50 text-neutral-800 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 border border-neutral-350 active:scale-95 transition-all cursor-pointer"
+                  >
+                    <Printer className="w-4 h-4" />
+                    <span>Print Bill Receipt</span>
+                  </button>
+                  <button
+                    onClick={() => setIsReceiptModalOpen(false)}
+                    className="flex-1 py-3 bg-slate-900 hover:bg-slate-850 text-white font-bold rounded-xl text-xs flex items-center justify-center active:scale-95 transition-all cursor-pointer"
+                  >
+                    Close & Dismiss
+                  </button>
+                </div>
+                {businessSettings.isReceiptOptional && (
+                  <button
+                    onClick={() => {
+                      alert("Sale finalized! Physical paper print skipped as configured.");
+                      setIsReceiptModalOpen(false);
+                    }}
+                    className="py-1.5 hover:underline text-[10px] text-slate-500 font-semibold cursor-pointer"
+                  >
+                    Skip & complete directly (receipt is optional)
+                  </button>
+                )}
               </div>
             </motion.div>
           </div>

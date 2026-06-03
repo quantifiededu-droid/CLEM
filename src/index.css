@@ -2,10 +2,10 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand: #00f5d4;
-  --color-brand-blue: #00b8ff;
-  --color-dark-bg: #050505;
-  --color-dark-card: #0a0a0a;
+  --color-brand: #ebd300;
+  --color-brand-blue: #2563eb;
+  --color-dark-bg: #070d1e;
+  --color-dark-card: #0e172e;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Playfair Display", Georgia, serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;

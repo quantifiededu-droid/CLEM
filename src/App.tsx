@@ -8,7 +8,7 @@ import LandingPage from './components/LandingPage';
 import PosTerminal from './components/PosTerminal';
 import BackOffice from './components/BackOffice';
 import { INITIAL_PRODUCTS, INITIAL_TABLES, INITIAL_SHIFTS, SAMPLE_SALES } from './data/mockData';
-import { Product, Table, Sale, Shift } from './types';
+import { Product, Table, Sale, Shift, BusinessSettings, StoreKeeper } from './types';
 
 export default function App() {
   // Navigation State: 'landing' | 'pos' | 'backoffice'
@@ -19,6 +19,26 @@ export default function App() {
   const [tables, setTables] = useState<Table[]>(INITIAL_TABLES);
   const [sales, setSales] = useState<Sale[]>(SAMPLE_SALES);
   const [shifts, setShifts] = useState<Shift[]>(INITIAL_SHIFTS);
+
+  // Global settings for customization (currency customization, printing choice, company details)
+  const [businessSettings, setBusinessSettings] = useState<BusinessSettings>({
+    businessName: 'Clemtrix Foods & Retail Ltd',
+    businessPhone: '+233 55 411 7978',
+    currency: 'GHS',
+    currencySymbol: 'GH₵',
+    isReceiptOptional: false,
+  });
+
+  // Store Keepers roster (owners can manage keepers, who can log as active cashiers)
+  const [storeKeepers, setStoreKeepers] = useState<StoreKeeper[]>([
+    { id: 'sk-1', name: 'Ama Osei', role: 'Senior Cashier', phone: '+233 554 117 900', status: 'active' },
+    { id: 'sk-2', name: 'Kofi Mensah', role: 'Store Keeper', phone: '+233 244 556 221', status: 'active' },
+    { id: 'sk-3', name: 'Ekow Essien', role: 'Associate Staff', phone: '+233 201 113 445', status: 'active' },
+  ]);
+
+  // Physical offline database logs sync state
+  const [isOnline, setIsOnline] = useState<boolean>(true);
+  const [offlineSyncQueue, setOfflineSyncQueue] = useState<Sale[]>([]);
 
   // Computed state pointers
   const activeShift = shifts.find(sh => sh.status === 'open') || null;
@@ -102,6 +122,12 @@ export default function App() {
           activeShift={activeShift}
           onCloseShift={handleCloseShift}
           onNavigate={setCurrentRoute}
+          businessSettings={businessSettings}
+          storeKeepers={storeKeepers}
+          isOnline={isOnline}
+          setIsOnline={setIsOnline}
+          offlineSyncQueue={offlineSyncQueue}
+          setOfflineSyncQueue={setOfflineSyncQueue}
         />
       )}
 
@@ -113,6 +139,14 @@ export default function App() {
           sales={sales}
           shifts={shifts}
           onNavigate={setCurrentRoute}
+          businessSettings={businessSettings}
+          onUpdateSettings={setBusinessSettings}
+          storeKeepers={storeKeepers}
+          onUpdateStoreKeepers={setStoreKeepers}
+          isOnline={isOnline}
+          setIsOnline={setIsOnline}
+          offlineSyncQueue={offlineSyncQueue}
+          onClearOfflineQueue={() => setOfflineSyncQueue([])}
         />
       )}
     </div>

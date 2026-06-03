@@ -66,6 +66,22 @@ export interface Shift {
   status: 'open' | 'closed';
 }
 
+export interface BusinessSettings {
+  businessName: string;
+  businessPhone: string;
+  currency: string;
+  currencySymbol: string;
+  isReceiptOptional: boolean;
+}
+
+export interface StoreKeeper {
+  id: string;
+  name: string;
+  role: string;
+  phone: string;
+  status: 'active' | 'suspended';
+}
+
 export interface InventoryLog {
   id: string;
   productId: string;

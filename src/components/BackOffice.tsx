@@ -4,9 +4,9 @@ import {
   BarChart3, Database, ShieldCheck, TrendingUp, Plus, RefreshCw, 
   AlertCircle, CheckCircle2, DollarSign, Sliders, Download, Search, 
   Building2, Users, Layers, Settings, LogOut, ArrowLeft, Trash2,
-  Edit3, Filter, ShoppingCart, Percent
+  Edit3, Filter, ShoppingCart, Percent, Phone
 } from 'lucide-react';
-import { Product, Sale, Shift, InventoryLog } from '../types';
+import { Product, Sale, Shift, InventoryLog, BusinessSettings, StoreKeeper } from '../types';
 
 interface BackOfficeProps {
   products: Product[];
@@ -15,6 +15,14 @@ interface BackOfficeProps {
   sales: Sale[];
   shifts: Shift[];
   onNavigate: (route: 'landing' | 'pos' | 'backoffice') => void;
+  businessSettings: BusinessSettings;
+  onUpdateSettings: React.Dispatch<React.SetStateAction<BusinessSettings>>;
+  storeKeepers: StoreKeeper[];
+  onUpdateStoreKeepers: React.Dispatch<React.SetStateAction<StoreKeeper[]>>;
+  isOnline: boolean;
+  setIsOnline: (online: boolean) => void;
+  offlineSyncQueue: Sale[];
+  onClearOfflineQueue: () => void;
 }
 
 export default function BackOffice({
@@ -23,10 +31,18 @@ export default function BackOffice({
   onRestockProduct,
   sales,
   shifts,
-  onNavigate
+  onNavigate,
+  businessSettings,
+  onUpdateSettings,
+  storeKeepers,
+  onUpdateStoreKeepers,
+  isOnline,
+  setIsOnline,
+  offlineSyncQueue,
+  onClearOfflineQueue
 }: BackOfficeProps) {
-  // Navigation tabs in BackOffice: 'dashboard' | 'inventory' | 'sales' | 'compliance' | 'shifts'
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'inventory' | 'sales' | 'compliance' | 'shifts'>('dashboard');
+  // Navigation tabs in BackOffice: 'dashboard' | 'inventory' | 'sales' | 'shifts' | 'settings'
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'inventory' | 'sales' | 'shifts' | 'settings'>('dashboard');
 
   // Filter and search variables for inventories
   const [invSearchQuery, setInvSearchQuery] = useState('');
@@ -139,7 +155,7 @@ export default function BackOffice({
   }, [sales]);
 
   // Format currencies safely
-  const formatGHS = (val: number) => `GHS ${val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const formatGHS = (val: number) => `${businessSettings.currencySymbol} ${val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   // Submit Restock triggers
   const handleRestockSubmit = (e: React.FormEvent) => {
@@ -248,8 +264,8 @@ export default function BackOffice({
             { id: 'dashboard', label: 'KPI Summary', icon: Sliders },
             { id: 'inventory', label: 'Inventory & Recipe', icon: Database },
             { id: 'sales', label: 'Sales Receipts Ledger', icon: ShoppingCart },
-            { id: 'compliance', label: 'GRA Tax Audit', icon: ShieldCheck },
             { id: 'shifts', label: 'Cashier Shifts', icon: Users },
+            { id: 'settings', label: 'Settings & Cloud', icon: Settings },
           ].map(tab => {
             const Icon = tab.icon;
             const isSel = activeTab === tab.id;
@@ -288,8 +304,8 @@ export default function BackOffice({
           { id: 'dashboard', label: 'KPIs', icon: Sliders },
           { id: 'inventory', label: 'Inventory', icon: Database },
           { id: 'sales', label: 'Sales', icon: ShoppingCart },
-          { id: 'compliance', label: 'GRA Tax', icon: ShieldCheck },
           { id: 'shifts', label: 'Shifts', icon: Users },
+          { id: 'settings', label: 'Settings', icon: Settings },
         ].map(tab => (
           <button
             key={tab.id}
@@ -336,7 +352,7 @@ export default function BackOffice({
               {[
                 { title: 'Gross POS Revenue', val: formatGHS(totals.revenue), desc: 'All local completed GHS receipts', icon: DollarsignIcon, color: 'text-brand bg-brand/10' },
                 { title: 'Calculated Cost of Sales', val: formatGHS(totals.cost), desc: 'Recipe items & material costs', icon: Database, color: 'text-amber-450 bg-amber-500/10' },
-                { title: 'GRA Net Taxes Collected', val: formatGHS(totals.tax), desc: 'Consolidated VAT + Levy sums', icon: ShieldCheck, color: 'text-brand-blue bg-brand-blue/10' },
+                { title: 'Total Invoices Issued', val: `${sales.length} Bills`, desc: 'Consolidated sales ticket volume', icon: ShoppingCart, color: 'text-brand-blue bg-brand-blue/10' },
                 { title: 'Gross Profit Margin', val: `${totals.margin.toFixed(1)}%`, desc: 'Average gross markup margin', icon: TrendingUp, color: 'text-purple-400 bg-purple-500/10' }
               ].map((kpi, idx) => {
                 const Icon = kpi.icon;
@@ -685,84 +701,6 @@ export default function BackOffice({
           </div>
         )}
 
-
-        {/* TAB 4: SHIELDS & COMPLIANCES & TAXES */}
-        {activeTab === 'compliance' && (
-          <div className="space-y-6">
-            
-            <div className="grid lg:grid-cols-3 gap-6">
-              
-              {/* Compliance stats overview */}
-              <div className="bg-slate-900/60 backdrop-blur-md p-5 rounded-2xl border border-slate-800 shadow-lg lg:col-span-1 space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="bg-brand/10 p-2 text-brand rounded-xl">
-                    <ShieldCheck className="w-5 h-5 shrink-0" />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-black text-slate-100 uppercase tracking-widest">GRA Fiscal Sync</h4>
-                    <span className="text-brand font-bold text-xs flex items-center gap-1 mt-0.5">
-                      <span className="w-2 h-2 rounded-full bg-brand animate-pulse" /> Compliant & Online G02
-                    </span>
-                  </div>
-                </div>
-
-                <div className="border-t border-slate-850 pt-4 space-y-4">
-                  <div>
-                    <span className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Assigned GRA VAT Number:</span>
-                    <span className="text-xs bg-slate-950 px-3 py-1.5 rounded-lg border border-slate-850 font-mono font-bold text-slate-350 select-all block">
-                      G02431X920L
-                    </span>
-                  </div>
-
-                  <div>
-                    <span className="text-[10px] uppercase text-slate-500 font-bold block mb-2 font-sans">Verify Sandbox handshake logs:</span>
-                    <button 
-                      onClick={handleSimulateGraSync}
-                      disabled={graSyncStatus === 'syncing'}
-                      className="w-full bg-slate-950 hover:bg-slate-900 border border-slate-850 text-slate-200 text-xs font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 cursor-pointer"
-                    >
-                      {graSyncStatus === 'syncing' ? <RefreshCw className="w-4 h-4 animate-spin text-brand" /> : null}
-                      <span>Recalibrate GRA API Nodes</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Sequential taxes breakdown sums */}
-              <div className="bg-slate-900/60 backdrop-blur-md p-5 rounded-2xl border border-slate-800 shadow-lg lg:col-span-2 space-y-4">
-                <h4 className="text-xs font-black text-slate-100 uppercase tracking-wider mb-2">Ghana Tax Compliance Split Breakdown (Quarter Summary)</h4>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  {[
-                    { label: 'GETFund Levy Sum', rate: '2.5% of net price', sum: totals.getfund },
-                    { label: 'NHIL Levy Sum', rate: '2.5% of net price', sum: totals.nhil },
-                    { label: 'Covid-19 Recovery Levy', rate: '1.0% of net price', sum: totals.covid },
-                    { label: 'GRA Standard VAT Sum', rate: '15.0% of cumulative basis', sum: totals.vat }
-                  ].map((tax, index) => (
-                    <div key={index} className="p-4 bg-slate-950/80 rounded-xl border border-slate-850 flex flex-col justify-between">
-                      <div>
-                        <span className="text-slate-500 text-[10px] font-bold block uppercase">{tax.label}</span>
-                        <span className="text-[9px] text-slate-450 font-mono">{tax.rate}</span>
-                      </div>
-                      <p className="text-lg md:text-xl font-black text-slate-200 font-mono tracking-tight mt-3">GHS {tax.sum.toFixed(2)}</p>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="border-t border-slate-850 pt-4 mt-2 flex items-start gap-2.5">
-                  <AlertCircle className="w-4 h-4 text-brand mt-0.5 shrink-0" />
-                  <p className="text-[10px] text-slate-450 leading-normal">
-                    <span className="font-bold text-slate-300 font-sans">Automated auditing: </span> 
-                    Clemtrix POS sequential computations comply fully with Ghana&apos;s Tax Laws. All receipts generated apply taxes automatically during cashier checkout, avoiding accounting errors and auditing gaps.
-                  </p>
-                </div>
-              </div>
-
-            </div>
-
-          </div>
-        )}
-
         {/* TAB 5: ACTIVE CASHIER SHIFT AUDIT LIST */}
         {activeTab === 'shifts' && (
           <div className="bg-slate-900/60 backdrop-blur-md p-5 rounded-2xl border border-slate-800 space-y-6">
@@ -839,6 +777,321 @@ export default function BackOffice({
                   })}
                 </tbody>
               </table>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 6: GLOBAL SETTINGS & CHANNELS */}
+        {activeTab === 'settings' && (
+          <div className="space-y-6">
+            <div className="bg-slate-900/60 backdrop-blur-md p-6 rounded-2xl border border-slate-800 shadow-xl space-y-4">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between border-b border-slate-800 pb-4 gap-4">
+                <div>
+                  <h2 className="text-base font-black text-white uppercase tracking-wider flex items-center gap-2">
+                    <Settings className="w-5 h-5 text-brand" />
+                    Global System Configuration
+                  </h2>
+                  <p className="text-xs text-slate-400 mt-1">Configure company credentials, select active currencies, manage store keepers, and monitor local database synchronization.</p>
+                </div>
+                {/* 15-day Trial Indicator Banner */}
+                <div className="bg-brand/10 border border-brand/20 py-2 px-3.5 rounded-xl text-right">
+                  <span className="text-[10px] uppercase font-black tracking-widest text-brand block">15-Day Free Trial Account</span>
+                  <span className="text-xs text-slate-200 block font-bold font-mono">Day 8 of 15 Active (7 Days Remaining)</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                
+                {/* Form column 1: Base settings */}
+                <div className="space-y-4">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800 pb-1.5 flex items-center gap-1.5">
+                    <Building2 className="w-3.5 h-3.5 text-slate-500" />
+                    Business details on printed receipt
+                  </h3>
+                  
+                  <div className="space-y-3.5">
+                    <div>
+                      <label className="text-xs text-slate-400 block mb-1">Business Name (shown on receipt):</label>
+                      <input
+                        type="text"
+                        value={businessSettings.businessName}
+                        onChange={(e) => onUpdateSettings(prev => ({ ...prev, businessName: e.target.value }))}
+                        className="w-full bg-slate-950 border border-slate-850 p-2.5 text-xs font-semibold rounded-lg focus:outline-none focus:border-brand text-slate-205"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="text-xs text-slate-400 block mb-1">Support Phone number / WhatsApp (shown on receipt):</label>
+                      <input
+                        type="text"
+                        value={businessSettings.businessPhone}
+                        onChange={(e) => onUpdateSettings(prev => ({ ...prev, businessPhone: e.target.value }))}
+                        className="w-full bg-slate-950 border border-slate-850 p-2.5 text-xs font-semibold rounded-lg focus:outline-none focus:border-brand text-slate-205"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-xs text-slate-400 block mb-1">Select Home Currency:</label>
+                        <select
+                          value={businessSettings.currency}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            let sym = 'GH₵';
+                            if (val === 'USD') sym = '$';
+                            else if (val === 'EUR') sym = '€';
+                            else if (val === 'GBP') sym = '£';
+                            else if (val === 'NGN') sym = '₦';
+                            onUpdateSettings(prev => ({ ...prev, currency: val, currencySymbol: sym }));
+                          }}
+                          className="w-full bg-slate-950 border border-slate-850 p-2.5 text-xs font-semibold rounded-lg focus:outline-none focus:border-brand text-slate-205"
+                        >
+                          <option value="GHS">GHS (Ghana Cedi)</option>
+                          <option value="USD">USD (US Dollar)</option>
+                          <option value="EUR">EUR (Euro)</option>
+                          <option value="GBP">GBP (British Pound)</option>
+                          <option value="NGN">NGN (Nigerian Naira)</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="text-xs text-slate-400 block mb-1">Currency Symbol:</label>
+                        <input
+                          type="text"
+                          disabled
+                          value={businessSettings.currencySymbol}
+                          className="w-full bg-slate-950/40 border border-slate-850 p-2.5 text-xs font-bold font-mono rounded-lg text-slate-400"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="p-3 bg-slate-950/60 border border-slate-850 rounded-xl space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-slate-300 font-bold">Optional Receipt Printing:</span>
+                        <button
+                          type="button"
+                          onClick={() => onUpdateSettings(prev => ({ ...prev, isReceiptOptional: !prev.isReceiptOptional }))}
+                          className={`w-11 h-6 rounded-full transition-colors relative cursor-pointer ${businessSettings.isReceiptOptional ? 'bg-brand' : 'bg-slate-800'}`}
+                        >
+                          <span className={`absolute top-1 w-4 h-4 rounded-full bg-slate-950 transition-all ${businessSettings.isReceiptOptional ? 'left-6' : 'left-1'}`} />
+                        </button>
+                      </div>
+                      <p className="text-[10px] text-slate-500 leading-normal">
+                        When enabled, printing thermal bills will become optional. Cashiers can close and checkout new orders instantly, or select skip print to conserve paper in hot environments.
+                      </p>
+                    </div>
+
+                  </div>
+                </div>
+
+                {/* Form column 2: Store keepers management */}
+                <div className="space-y-4 flex flex-col justify-between">
+                  <div>
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800 pb-1.5 flex items-center justify-between gap-1.5">
+                      <span className="flex items-center gap-1.5">
+                        <Users className="w-3.5 h-3.5 text-slate-500" />
+                        Manage registered Store Keepers
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const name = prompt("Enter new storekeeper name:");
+                          if (!name) return;
+                          const phone = prompt("Enter phone number:", "+233 ");
+                          if (!phone) return;
+                          const role = prompt("Enter role (e.g. Cashier, Store Keeper, Supervisor):", "Cashier");
+                          if (!role) return;
+
+                          const newKeeper: StoreKeeper = {
+                            id: `sk-${Date.now()}`,
+                            name,
+                            role,
+                            phone,
+                            status: 'active'
+                          };
+                          onUpdateStoreKeepers(prev => [...prev, newKeeper]);
+                          alert(`Successfully registered storekeeper ${name}!`);
+                        }}
+                        className="text-[10px] bg-brand text-slate-950 hover:bg-brand/90 font-bold px-2.5 py-1 rounded cursor-pointer uppercase flex items-center gap-1"
+                      >
+                        <Plus className="w-3 h-3" /> Add Keeper
+                      </button>
+                    </h3>
+
+                    <div className="space-y-2.5 mt-3 max-h-[170px] overflow-y-auto pr-1">
+                      {storeKeepers.map(keeper => (
+                        <div key={keeper.id} className="bg-slate-950/80 p-2.5 rounded-xl border border-slate-850 flex items-center justify-between text-xs">
+                          <div>
+                            <span className="font-bold text-slate-200 block">{keeper.name}</span>
+                            <span className="text-[10px] text-blue-400 font-medium">{keeper.role} • {keeper.phone}</span>
+                          </div>
+                          
+                          <div className="flex items-center gap-2">
+                            <span className={`text-[9px] px-2 py-0.5 rounded-full font-mono font-bold tracking-wide ${
+                              keeper.status === 'active' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'
+                            }`}>
+                              {keeper.status.toUpperCase()}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                onUpdateStoreKeepers(prev => prev.map(k => {
+                                  if (k.id === keeper.id) {
+                                    return { ...k, status: k.status === 'active' ? 'suspended' : 'active' };
+                                  }
+                                  return k;
+                                }));
+                              }}
+                              className="text-slate-400 hover:text-red-400 transition-colors cursor-pointer"
+                              title="Toggle status"
+                            >
+                              <Edit3 className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (confirm(`Are you sure you want to delete ${keeper.name} from the database roster?`)) {
+                                  onUpdateStoreKeepers(prev => prev.filter(k => k.id !== keeper.id));
+                                }
+                              }}
+                              className="text-slate-500 hover:text-red-500 transition-colors cursor-pointer"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Real-time sync dashboard queue logs */}
+                  <div className="p-3 bg-slate-950/60 border border-slate-850 rounded-xl space-y-2 mt-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-slate-200 font-bold flex items-center gap-1.5">
+                        <RefreshCw className="w-3.5 h-3.5 text-teal-400" />
+                        Internet connection sync queue
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (!isOnline) {
+                            const count = offlineSyncQueue.length;
+                            if (count > 0) {
+                              alert(`⚡ Live Signal Recovered! Synchronizing offline ledger bundles: automatically uploaded ${count} invoices.`);
+                              onClearOfflineQueue();
+                            }
+                          }
+                          setIsOnline(!isOnline);
+                        }}
+                        className={`text-[9px] font-mono font-bold py-1 px-2.5 rounded border cursor-pointer ${
+                          isOnline 
+                          ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' 
+                          : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+                        }`}
+                      >
+                        {isOnline ? 'CLOUD SYNC ONLINE' : 'WORKING OFFLINE READY'}
+                      </button>
+                    </div>
+                    
+                    <div className="text-[11px] text-slate-400 space-y-1">
+                      <div className="flex justify-between">
+                        <span>Local Offline Queue Buffer:</span>
+                        <span className="font-mono font-bold text-slate-300">{offlineSyncQueue.length} records</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Database Sync Protocol:</span>
+                        <span className="text-blue-400 font-semibold">Offline client-side local first, auto Broadcaster on reconnect</span>
+                      </div>
+                    </div>
+
+                    {offlineSyncQueue.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          alert(`Successfully broadcasted ${offlineSyncQueue.length} buffered sales receipts offline cache bundles securely to ERP backend servers!`);
+                          onClearOfflineQueue();
+                        }}
+                        className="w-full py-1.5 mt-1 bg-brand text-slate-950 font-black rounded-lg text-[10px] uppercase cursor-pointer"
+                      >
+                        ⚡ Re-Sync pending Sales records immediately ({offlineSyncQueue.length} tickets)
+                      </button>
+                    )}
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+
+            {/* Visual breakdown of pricing and product subscriptions */}
+            <div className="bg-slate-900/60 backdrop-blur-md p-6 rounded-2xl border border-slate-800 shadow-xl space-y-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800 pb-2">
+                Merchant Application Subscription Model
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs text-slate-400">
+                
+                {/* Ghanaian clients pricing box */}
+                <div className="bg-slate-950 p-4 border border-slate-850 rounded-2xl flex flex-col justify-between">
+                  <div>
+                    <span className="text-amber-400 font-black tracking-wider uppercase text-[10px] block mb-1">Local manual installations (Ghana users only)</span>
+                    <h4 className="text-lg font-black text-slate-100 mb-2">GHS 1,500 <span className="text-xs font-medium text-slate-400">One-time installation setup</span></h4>
+                    <p className="text-[11px] text-slate-400 leading-relaxed mb-4">
+                      Comes with a manual layout technician visit to set up thermal drawers, printers, local servers, and 1-on-1 staff training.
+                    </p>
+                  </div>
+                  <div className="border-t border-slate-900 pt-3 space-y-1.5 text-[11px]">
+                    <div className="flex justify-between">
+                      <span>Professional training fee:</span>
+                      <span className="font-bold text-slate-200">GHS 300</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Annual contract renewal fee:</span>
+                      <span className="font-bold text-slate-200">GHS 800 / Year</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* International clients pricing box */}
+                <div className="bg-slate-950 p-4 border border-slate-850 rounded-2xl flex flex-col justify-between">
+                  <div>
+                    <span className="text-blue-400 font-black tracking-wider uppercase text-[10px] block mb-1">Online download installation (Rest of world)</span>
+                    <h4 className="text-lg font-black text-slate-100 mb-2">$200 <span className="text-xs font-medium text-slate-400">One-time digital download license</span></h4>
+                    <p className="text-[11px] text-slate-400 leading-relaxed mb-4">
+                      Self-installing executable installation bundle for Windows and Linux. Installs in 3 minutes with native offline buffers and local database.
+                    </p>
+                  </div>
+                  <div className="border-t border-slate-900 pt-3 space-y-1.5 text-[11px]">
+                    <div className="flex justify-between">
+                      <span>15-Day trial status:</span>
+                      <span className="font-bold text-emerald-400">Free Trial pre-approved</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Annual contract renewal fee:</span>
+                      <span className="font-bold text-slate-200">$100 / Year</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Developer contact triggers */}
+              <div className="p-4 bg-brand/5 border border-brand/10 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4 text-xs mt-3">
+                <div className="space-y-1">
+                  <span className="font-bold text-slate-100 block">Need custom modules or manual deployment help?</span>
+                  <p className="text-[11px] text-slate-400">Contact the Clemtrix core system engineers directly via WhatsApp for swift assistance.</p>
+                </div>
+                <a
+                  href="https://wa.me/233554117978"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="bg-[#25D366] hover:bg-[#20ba56] text-white font-black py-2.5 px-5 rounded-xl transition-all shadow-lg shadow-emerald-500/10 flex items-center gap-1.5 cursor-pointer shrink-0"
+                >
+                  <Phone className="w-4 h-4 stroke-[2.5]" />
+                  <span>WhatsApp manual installer developers (+233554117978)</span>
+                </a>
+              </div>
+
             </div>
           </div>
         )}

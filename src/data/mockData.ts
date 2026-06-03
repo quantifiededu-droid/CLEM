@@ -271,10 +271,10 @@ export const SAMPLE_SALES: Sale[] = [
 
 export const BLOG_POSTS = [
   {
-    title: 'Navigating GRA Fiscalization: A Guide for Ghanaian Businesses',
-    excerpt: 'Understand how the Ghana Revenue Authority (GRA) integration requirements impact your retail store or restaurant, and how Clemtrix automated compliant billing.',
+    title: 'Optimizing Store Cash Flow: A Guide for Ghanaian Retailers',
+    excerpt: 'Understand how cash balancing, register float control, and real-time cloud bookkeeping safeguard your stores liquidity and prevent cash register variances.',
     date: 'May 28, 2026',
-    author: 'Kwadwo Boateng, Tech Compliance'
+    author: 'Kwadwo Boateng, ERP Consultant'
   },
   {
     title: 'Reducing Ingredients Waste with Food Recipe Cost Engineering',
