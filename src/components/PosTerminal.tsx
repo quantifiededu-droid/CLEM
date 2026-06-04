@@ -7,6 +7,7 @@ import {
   ChevronRight, RefreshCw, Layers
 } from 'lucide-react';
 import { Product, Table, Sale, Shift, OrderItem, TaxComponent, BusinessSettings, StoreKeeper } from '../types';
+import { ClemLogoIcon } from './ClemLogo';
 
 interface PosTerminalProps {
   products: Product[];
@@ -353,6 +354,7 @@ export default function PosTerminal({
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div className="flex items-center gap-2">
+            <ClemLogoIcon size={25} className="drop-shadow-md" />
             <span className="text-sm font-black tracking-tight text-white">Clemtrix POS</span>
             <span className="text-[10px] bg-slate-800 border border-slate-700 text-slate-400 rounded px-1.5 py-0.5 uppercase font-mono font-bold">FOH V4</span>
           </div>

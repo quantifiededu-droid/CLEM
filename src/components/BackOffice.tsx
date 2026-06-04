@@ -7,6 +7,7 @@ import {
   Edit3, Filter, ShoppingCart, Percent, Phone
 } from 'lucide-react';
 import { Product, Sale, Shift, InventoryLog, BusinessSettings, StoreKeeper } from '../types';
+import { ClemLogoIcon } from './ClemLogo';
 
 interface BackOfficeProps {
   products: Product[];
@@ -246,9 +247,7 @@ export default function BackOffice({
           </button>
           
           <div className="flex items-center gap-3">
-            <div className="bg-brand/10 border border-brand/20 p-2 rounded-xl text-brand shadow-md">
-              <BarChart3 className="w-5 h-5 text-brand" />
-            </div>
+            <ClemLogoIcon size={38} className="drop-shadow-md" />
             <div>
               <span className="text-lg font-black tracking-tight bg-gradient-to-r from-brand to-brand-blue bg-clip-text text-transparent">
                 Clemtrix ERP

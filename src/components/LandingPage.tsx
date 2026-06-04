@@ -4,8 +4,15 @@ import {
   Smartphone, Monitor, ShieldCheck, BarChart3, Database, Users, 
   Check, HelpCircle, ArrowRight, ChevronRight, ChevronDown, 
   MapPin, Mail, Phone, RefreshCw, Sliders, Coffee, ShoppingBag, 
-  Sparkles, DollarSign, Download, MessageCircle, Building2
+  Sparkles, DollarSign, Download, MessageCircle, Building2,
+  Pill, Store
 } from 'lucide-react';
+import { ClemLogoIcon, ClemLogoFull } from './ClemLogo';
+
+// Import high-fidelity terminal screenshot assets
+import posRetailImg from '../assets/images/pos_retail_1780476724543.png';
+import posRestaurantImg from '../assets/images/pos_restaurant_1780476705295.png';
+import posDashboardImg from '../assets/images/pos_dashboard_1780476740840.png';
 
 interface LandingPageProps {
   onNavigate: (route: 'landing' | 'pos' | 'backoffice') => void;
@@ -13,36 +20,36 @@ interface LandingPageProps {
 
 const SHOP_SLIDES = [
   {
-    type: 'Local Retail & Supermarkets',
-    tagline: 'Lightning-fast checkout registers, bulk inventory uploads, and persistent offline database buffers.',
-    image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1600&q=80',
-    icon: ShoppingBag,
-    badge: '100% Stock Accuracy',
+    type: 'Pharmacies & Chemists',
+    tagline: 'Track medicinal stock expiration dates, batch numbers, dosage units, and process lightning-fast customer prescriptions.',
+    image: posRetailImg,
+    icon: Pill,
+    badge: '100% Expiry Assurance',
     colorClass: 'from-blue-600/20 to-blue-900/30 border-blue-500/20 text-blue-400'
   },
   {
-    type: 'Fine Dining & Cocktail Bars',
-    tagline: 'Interactive dynamic visual floor plans, automated kitchen display orders, and live recipe cost deplete.',
-    image: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=1600&q=80',
-    icon: Coffee,
-    badge: '85% Waste Reduction',
-    colorClass: 'from-amber-600/20 to-amber-900/30 border-amber-500/20 text-amber-400'
-  },
-  {
-    type: 'High-End Boutiques & Apparel',
-    tagline: 'Aesthetic variant categorization grid, multi-unit stock tracking, and integrated customer loyalty cards.',
-    image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1600&q=80',
-    icon: Sparkles,
+    type: 'Grocery Stores & Local Shops',
+    tagline: 'Instant item lookup lanes, customized shelf barcode scans, cash counter tracking, and persistent offline database logs.',
+    image: posDashboardImg,
+    icon: Store,
     badge: 'Zero Register Variance',
     colorClass: 'from-purple-600/20 to-purple-900/30 border-purple-500/20 text-purple-400'
   },
   {
-    type: 'Urban Bakeries & Coffee Shops',
-    tagline: 'Hot drink modifier selectors, table reservations, pastry inventory counts, and instant split checkouts.',
-    image: 'https://images.unsplash.com/photo-1453614512568-c4024d13c247?auto=format&fit=crop&w=1600&q=80',
-    icon: Sliders,
-    badge: '3-Sec Drawer Checks',
+    type: 'Supermarkets & Wholesales',
+    tagline: 'Dual-currency tax invoicing, multi-lane checkout buffers, robust warehouse restock logs, and supplier ledger systems.',
+    image: posRetailImg,
+    icon: ShoppingBag,
+    badge: 'Dual-Currency Secure GHS / USD',
     colorClass: 'from-emerald-600/20 to-emerald-950/30 border-emerald-500/20 text-emerald-400'
+  },
+  {
+    type: 'Drinks & Liquor Shops',
+    tagline: 'Crate stock counts, empty bottle returns tracker, cold-room temperature sales modifiers, and wholesale price catalogs.',
+    image: posRestaurantImg,
+    icon: Database,
+    badge: 'Crate & Empty Bottle Ledger',
+    colorClass: 'from-amber-600/20 to-amber-900/30 border-amber-500/20 text-amber-400'
   }
 ];
 
@@ -73,47 +80,14 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
   const estimatedSavings = monthlySales * estimatedLeakagePercent * 0.85; // Assume 85% reduction in leakages using Clemtrix
   const annualSavings = estimatedSavings * 12;
 
-  // Dynamic client-side .exe download generation with instructions & whatsapp contact
+  // Downloads the actual Windows standalone executable (Clemtrix.exe) served from public/Clemtrix.exe
   const handleDownloadExe = () => {
-    const textContent = `===========================================================
-CLEMTRIX POS WINDOWS SETUP WRAPPER & INSTRUCTIONS
-===========================================================
-Thank you for downloading Clemtrix POS Windows Client v4.2!
-
-This file represents the official Windows standalone executable (.exe) installer
-designed for touch-terminals, desktop registers, and back office systems in Ghana.
-
-PRODUCT SPECIFICATIONS:
------------------------
-- App Name: ClemtrixPOSSetup_v4.2.exe
-- Platform: Windows 10 / 11 (32-bit & 64-bit compatible)
-- Requirements: Touchscreen support, ESC/POS hardware interfaces
-- Integrity Hash (SHA-256): 8b5f3a09e1cd459d87cf2b69013c77d94f27ca34b9d0
-
-MANUAL DEPLOYMENT & ASSISTANCE:
--------------------------------
-Would you like a professional manual installation, recipe calibration, 
-and local network configuration? We are here to help!
-Get fully set up in less than 30 minutes.
-
-CONTACT US:
-- WhatsApp Support: https://wa.me/233554117978
-- Direct Call: +233 55 411 7978
-- Email: installations@clemtrixpos.gh
-
-===========================================================
-CLEMTRIX COMMERCE SOFTWARE LIMITED • ACCRA, GHANA
-===========================================================`;
-
-    const blob = new Blob([textContent], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
-    link.href = url;
-    link.download = 'clemtrix-pos-v4.2.exe'; // Dynamic .exe extension mapping
+    link.href = '/Clemtrix.exe';
+    link.download = 'Clemtrix.exe';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    URL.revokeObjectURL(url);
   };
 
   const faqs = [
@@ -156,10 +130,7 @@ CLEMTRIX COMMERCE SOFTWARE LIMITED • ACCRA, GHANA
           <div className="flex items-center justify-between">
             {/* Logo area */}
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20 border border-brand/50 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-tr from-brand-blue to-brand opacity-80" />
-                <span className="font-mono text-white font-black text-sm relative z-10">CX</span>
-              </div>
+              <ClemLogoIcon size={38} className="drop-shadow-lg" />
               <div>
                 <span className="text-xl font-black tracking-tight text-white flex items-center gap-1.5">
                   CLEMTRIX <span className="text-[10px] bg-brand/10 border border-brand/40 text-brand px-2 py-0.5 rounded-full font-mono uppercase tracking-widest">POS</span>
@@ -208,17 +179,21 @@ CLEMTRIX COMMERCE SOFTWARE LIMITED • ACCRA, GHANA
             {/* Premium Call to Action buttons */}
             <div className="hidden md:flex items-center gap-3">
               <button 
-                onClick={() => onNavigate('backoffice')}
-                className="text-white hover:text-brand font-extrabold text-xs tracking-wider uppercase px-4 py-2 hover:bg-white/5 rounded-full transition-all border border-transparent hover:border-slate-800"
+                onClick={handleDownloadExe}
+                className="text-white hover:text-brand font-extrabold text-xs tracking-wider uppercase px-4 py-2 hover:bg-white/5 rounded-full transition-all border border-transparent hover:border-slate-800 cursor-pointer flex items-center gap-1.5"
               >
-                Backoffice ERP
+                <Download className="w-3.5 h-3.5" />
+                Download Desktop App
               </button>
-              <button 
-                onClick={() => onNavigate('pos')} 
-                className="px-5 py-2.5 bg-brand hover:bg-white text-slate-950 hover:text-blue-900 rounded-full font-black text-xs tracking-wider uppercase transition-all duration-300 transform scale-100 hover:scale-105 active:scale-95 cursor-pointer shadow-lg shadow-brand/10 border border-brand/50"
+              <a 
+                href="https://wa.me/233554117978?text=Hello%20Clem%2C%20I%20would%20like%20to%20contact%20you%20regarding%20Clemtrix%20POS." 
+                target="_blank"
+                rel="noreferrer"
+                className="px-5 py-2.5 bg-[#25D366] hover:bg-white text-white hover:text-slate-950 rounded-full font-black text-xs tracking-wider uppercase transition-all duration-300 transform scale-100 hover:scale-105 active:scale-95 cursor-pointer shadow-lg shadow-brand/10 border border-brand/50 flex items-center gap-1.5"
               >
-                Launch Live POS
-              </button>
+                <MessageCircle className="w-3.5 h-3.5" />
+                WhatsApp Clem
+              </a>
             </div>
 
             {/* Hambuger for mobile */}
@@ -257,27 +232,31 @@ CLEMTRIX COMMERCE SOFTWARE LIMITED • ACCRA, GHANA
             <a href="#download" onClick={() => setMobileMenuOpen(false)} className="hover:text-brand py-1 transition-colors flex items-center gap-2 text-brand font-bold">
               <Download className="w-4 h-4" /> Download Windows App (.EXE)
             </a>
-            <div className="border-t border-white/10 pt-4 flex flex-col gap-3">
+             <div className="border-t border-white/10 pt-4 flex flex-col gap-3">
               <button 
-                onClick={() => { onNavigate('backoffice'); setMobileMenuOpen(false); }}
-                className="w-full text-center text-slate-300 hover:text-white py-2 border border-white/10 rounded-lg cursor-pointer"
+                onClick={() => { handleDownloadExe(); setMobileMenuOpen(false); }}
+                className="w-full bg-slate-900 border border-white/15 text-white hover:text-brand font-extrabold py-2.5 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-colors cursor-pointer"
               >
-                Back-Office ERP Dashboard
+                <Download className="w-4 h-4" />
+                Download Desktop App
               </button>
-              <button 
-                onClick={() => { onNavigate('pos'); setMobileMenuOpen(false); }}
-                className="w-full bg-blue-600 hover:bg-brand text-white hover:text-slate-950 font-extrabold py-2.5 rounded-lg shadow-lg shadow-blue-650/15 flex items-center justify-center gap-2 transition-colors cursor-pointer"
+              <a 
+                href="https://wa.me/233554117978?text=Hello%20Clem%2C%20I%20would%20like%20to%20contact%20you%20regarding%20Clemtrix%20POS."
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full bg-[#25D366] hover:bg-[#20ba59] text-white font-extrabold py-2.5 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-colors cursor-pointer text-center"
               >
-                Launch Touchscreen POS
-                <ArrowRight className="w-4 h-4" />
-              </button>
+                <MessageCircle className="w-4 h-4" />
+                WhatsApp Clem
+              </a>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* HERO SECTION */}
-      <section className="relative px-6 pt-10 pb-16 md:pt-16 md:pb-24 overflow-hidden min-h-[82vh] flex items-center">
+      <section className="relative px-6 pt-4 pb-12 md:pt-6 md:pb-16 overflow-hidden min-h-[80vh] flex items-center">
         {/* Fullscreen Slideshow background layers */}
         <div className="absolute inset-0 z-0 overflow-hidden select-none pointer-events-none">
           <AnimatePresence mode="popLayout">
@@ -299,7 +278,127 @@ CLEMTRIX COMMERCE SOFTWARE LIMITED • ACCRA, GHANA
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand/5 rounded-full blur-[140px] pointer-events-none z-10" />
         <div className="absolute top-10 right-10 w-96 h-96 bg-brand-blue/5 rounded-full blur-[120px] pointer-events-none z-10" />
 
-        <div className="max-w-7xl mx-auto flex flex-col items-center text-center relative z-20 w-full">
+        <div className="max-w-7xl mx-auto flex flex-col items-center text-center relative z-20 w-full pt-1 sm:-mt-4">
+          
+          {/* Majestic Interactive Touchscreen Slideshow Device at Top Fold */}
+          <motion.div
+            initial={{ opacity: 0, y: 35 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.15 }}
+            className="w-full max-w-4xl px-2 sm:px-4 z-25 relative mb-8 shadow-2xl"
+          >
+            {/* Premium Metallic Bezel Device containing screenshots */}
+            <div className="relative bg-slate-950 p-2 sm:p-4 rounded-[2rem] border-4 border-slate-800 shadow-2xl shadow-blue-995/50 overflow-hidden group/device">
+              
+              {/* Device Notch Ambient Shine and Speaker indicator */}
+              <div className="absolute top-0 inset-x-0 h-4 flex items-center justify-center pointer-events-none z-35">
+                <div className="w-16 h-1 bg-slate-800 rounded-full" />
+              </div>
+
+              {/* Terminal Viewport */}
+              <div className="relative aspect-[16/10] sm:aspect-[16/9] bg-slate-900 rounded-[1.3rem] overflow-hidden border border-slate-750">
+                
+                {/* Smooth Slide Background Switcher */}
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeSlide}
+                    initial={{ opacity: 0, scale: 1.02 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.98 }}
+                    transition={{ duration: 0.4, ease: 'easeInOut' }}
+                    className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                    style={{ backgroundImage: `url(${SHOP_SLIDES[activeSlide].image})` }}
+                  />
+                </AnimatePresence>
+
+                {/* Brand Overlay sitting beautifully in the center of the active slideshow screenshot */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-4 z-15 pointer-events-none">
+                  <div className="bg-slate-950/85 backdrop-blur-md px-6 py-5 sm:px-10 sm:py-6 rounded-[2rem] border border-brand/20 shadow-2xl shadow-brand/5 text-center pointer-events-auto max-w-md scale-95 sm:scale-100 flex flex-col items-center justify-center">
+                    <ClemLogoFull iconSize="md" showText={true} />
+                  </div>
+                </div>
+
+                {/* Dark Vignette Overlay for aesthetic shine and high read-contrast */}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent pointer-events-none z-10" />
+
+                {/* Live System Class Indicator */}
+                <div className="absolute top-3 left-3 sm:top-5 sm:left-5 flex items-center gap-2 bg-slate-950/90 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 z-20 shadow-lg select-none">
+                  <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="text-[8px] sm:text-[9px] font-mono font-bold tracking-widest text-[#efc15f] uppercase">
+                    Live Demo &bull; Use Controls Below to Browse
+                  </span>
+                </div>
+
+                {/* Bottom Overlay Text Box & Nav Buttons */}
+                <div className="absolute bottom-3 left-3 right-3 sm:bottom-5 sm:left-5 sm:right-5 flex flex-col md:flex-row md:items-end justify-between gap-3 z-20">
+                  
+                  {/* Informational description panel */}
+                  <div className="text-left max-w-md bg-slate-950/90 backdrop-blur-md p-3 sm:p-4 rounded-xl border border-slate-850 shadow-2xl">
+                    <span className="text-[8px] sm:text-[9px] font-mono font-black tracking-widest text-brand uppercase bg-brand/10 px-2 py-0.5 rounded border border-brand/25 inline-block mb-1">
+                      {SHOP_SLIDES[activeSlide].badge}
+                    </span>
+                    <h3 className="text-xs sm:text-sm font-black text-white uppercase tracking-tight flex items-center gap-1.5">
+                      {React.createElement(SHOP_SLIDES[activeSlide].icon, { className: "w-3.5 h-3.5 text-brand shrink-0" })}
+                      {SHOP_SLIDES[activeSlide].type}
+                    </h3>
+                    <p className="text-[10px] sm:text-xs text-slate-300 mt-1 leading-relaxed">
+                      {SHOP_SLIDES[activeSlide].tagline}
+                    </p>
+                  </div>
+
+                  {/* Nav Chevrons Panel */}
+                  <div className="flex items-center gap-1.5 self-end bg-slate-950/90 backdrop-blur-md p-1 rounded-full border border-slate-850 shadow-md">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveSlide((prev) => (prev - 1 + SHOP_SLIDES.length) % SHOP_SLIDES.length);
+                      }}
+                      className="w-7 h-7 rounded-full bg-white/5 hover:bg-brand hover:text-slate-950 text-white flex items-center justify-center transition-all border border-white/5 active:scale-95 cursor-pointer text-xs font-black shadow-md"
+                      title="Previous"
+                    >
+                      &larr;
+                    </button>
+                    
+                    <div className="flex gap-1 px-0.5 items-center">
+                      {SHOP_SLIDES.map((_, idx) => (
+                        <button
+                          key={idx}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActiveSlide(idx);
+                          }}
+                          className={`w-1.5 h-1.5 rounded-full transition-all cursor-pointer ${
+                            activeSlide === idx ? 'bg-brand w-4' : 'bg-white/25 hover:bg-white/40'
+                          }`}
+                        />
+                      ))}
+                    </div>
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveSlide((prev) => (prev + 1) % SHOP_SLIDES.length);
+                      }}
+                      className="w-7 h-7 rounded-full bg-white/5 hover:bg-brand hover:text-slate-950 text-white flex items-center justify-center transition-all border border-white/5 active:scale-95 cursor-pointer text-xs font-black shadow-md"
+                      title="Next"
+                    >
+                      &rarr;
+                    </button>
+                  </div>
+
+                </div>
+
+                {/* Bezel Gloss Reflection Overlays */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent skew-x-12 -translate-y-full group-hover/device:translate-y-full transition-all duration-1000 ease-in-out pointer-events-none z-10" />
+
+              </div>
+            </div>
+
+            <p className="text-center text-[10px] text-white/45 mt-3 font-mono">
+              * Use the navigation controls inside the screen to tour screenshot modules: pharmacy itemizers, retail registries, and manager dashboards.
+            </p>
+          </motion.div>
+
           <motion.div 
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
@@ -308,33 +407,6 @@ CLEMTRIX COMMERCE SOFTWARE LIMITED • ACCRA, GHANA
           >
             <Sparkles className="w-3.5 h-3.5 text-brand" />
             <span>Built Specifically for Hospitality & Retail in Ghana</span>
-          </motion.div>
-
-          {/* Interactive Shop Type Selector Tabs */}
-          <motion.div 
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.05 }}
-            className="flex flex-wrap items-center justify-center gap-1.5 border border-white/10 bg-slate-900/80 p-1.5 rounded-full max-w-4xl mx-auto mb-8 backdrop-blur-lg"
-          >
-            {SHOP_SLIDES.map((slide, idx) => {
-              const IconComponent = slide.icon;
-              const isSelected = activeSlide === idx;
-              return (
-                <button
-                  key={idx}
-                  onClick={() => setActiveSlide(idx)}
-                  className={`flex items-center gap-1.5 px-3.5 py-2.5 rounded-full text-xs font-extrabold transition-all cursor-pointer ${
-                    isSelected 
-                    ? 'bg-brand text-slate-950 font-black shadow-lg shadow-brand/10' 
-                    : 'text-white/60 hover:text-white hover:bg-white/5'
-                  }`}
-                >
-                  <IconComponent className={`w-3.5 h-3.5 ${isSelected ? 'text-slate-950' : 'text-brand'}`} />
-                  <span>{slide.type}</span>
-                </button>
-              );
-            })}
           </motion.div>
 
           <motion.h1 
@@ -721,7 +793,7 @@ CLEMTRIX COMMERCE SOFTWARE LIMITED • ACCRA, GHANA
                 <div className="grid grid-cols-2 gap-4 my-6 bg-white/[0.02] border border-white/5 rounded-2xl p-4 text-xs font-mono">
                   <div className="space-y-2">
                     <p className="text-white/40 uppercase text-[9px] tracking-wider">File Name</p>
-                    <p className="text-white/90 font-bold font-sans truncate">clemtrix-pos-v4.2.exe</p>
+                    <p className="text-white/90 font-bold font-sans truncate">Clemtrix.exe</p>
                   </div>
                   <div className="space-y-2">
                     <p className="text-white/40 uppercase text-[9px] tracking-wider">Compatibility</p>
@@ -731,7 +803,7 @@ CLEMTRIX COMMERCE SOFTWARE LIMITED • ACCRA, GHANA
                     <p className="text-white/40 uppercase text-[9px] tracking-wider">Build Version</p>
                     <p className="text-white/90 font-bold">v4.2.0-stable</p>
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-1">
                     <p className="text-white/40 uppercase text-[9px] tracking-wider">File Size</p>
                     <p className="text-white/90 font-bold">42.4 MBytes</p>
                   </div>
@@ -773,7 +845,7 @@ CLEMTRIX COMMERCE SOFTWARE LIMITED • ACCRA, GHANA
                     className="mt-3.5 p-3.5 bg-brand/10 border border-brand/20 rounded-xl text-center"
                   >
                     <p className="text-xs text-slate-100 leading-normal">
-                      🎉 <span className="font-bold text-brand">Download started successfully!</span> Your file <code className="font-mono bg-white/5 px-1 py-0.5 rounded text-white text-[11px]">clemtrix-pos-v4.2.exe</code> has been queued.
+                      🎉 <span className="font-bold text-brand">Download started successfully!</span> Your file <code className="font-mono bg-white/5 px-1 py-0.5 rounded text-white text-[11px]">Clemtrix.exe</code> has been queued.
                     </p>
                     <p className="text-[10px] text-white/50 mt-1 font-sans">
                       Need licensing keys or custom hardware maps? Simply request manual help on the right!
@@ -1249,8 +1321,8 @@ CLEMTRIX COMMERCE SOFTWARE LIMITED • ACCRA, GHANA
       <footer className="border-t border-white/10 bg-dark-bg py-16 px-6 text-xs text-white/50">
         <div className="max-w-7xl mx-auto grid md:grid-cols-4 gap-8 mb-12">
           <div>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-6 h-6 bg-gradient-to-tr from-brand to-brand-blue rounded-md"></div>
+            <div className="flex items-center gap-2.5 mb-4">
+              <ClemLogoIcon size={30} className="drop-shadow-md" />
               <span className="text-base font-extrabold text-white tracking-tight">CLEMTRIX<span className="font-light opacity-50"> POS</span></span>
             </div>
             <p className="text-white/50 leading-relaxed pr-4">Advanced hybrid touchscreen billing systems and robust cloud ERP databases engineered specifically for businesses across Accra, Kumasi, and all of Ghana.</p>
@@ -1312,12 +1384,12 @@ CLEMTRIX COMMERCE SOFTWARE LIMITED • ACCRA, GHANA
           className="bg-slate-900 text-white text-[11px] font-semibold px-3 py-1.5 rounded-lg shadow-xl border border-white/10 pointer-events-auto flex items-center gap-1.5 max-w-xs"
         >
           <span className="w-1.5 h-1.5 rounded-full bg-[#25D366] animate-pulse" />
-          <span>Need manual install? <strong>WhatsApp Us!</strong></span>
+          <span><strong>Contact the developer</strong></span>
         </motion.div>
 
         {/* Floating action button */}
         <motion.a
-          href="https://wa.me/233554117978?text=Hello%20Clemtrix%2C%20I%20would%20like%2520to%20request%20manual%20installation%20support%20for%2520the%20POS%2520system."
+          href="https://wa.me/233554117978?text=Hello%20Clem%2C%20I%20would%20like%20to%20contact%20you%20regarding%20Clemtrix%20POS."
           target="_blank"
           rel="noreferrer"
           initial={{ scale: 0, opacity: 0 }}
@@ -1325,7 +1397,7 @@ CLEMTRIX COMMERCE SOFTWARE LIMITED • ACCRA, GHANA
           transition={{ delay: 1, type: "spring", stiffness: 260, damping: 20 }}
           className="bg-[#25D366] hover:bg-[#20ba59] hover:scale-110 active:scale-90 text-white p-4 rounded-full shadow-2xl transition-all pointer-events-auto relative flex items-center justify-center group"
           id="whatsapp-floater"
-          title="Chat with us for manual installation support"
+          title="Contact the developer"
         >
           <MessageCircle className="w-6 h-6 shrink-0" />
           <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-[#25D366] text-white text-[10px] uppercase tracking-widest font-extrabold px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap hidden sm:inline-block shadow-md">
